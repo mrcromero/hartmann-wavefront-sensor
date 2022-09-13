@@ -15,6 +15,18 @@ def find_centroid(arr):
 
     return (centroid_x, centroid_y)
 
+def centroid_grid(grid):
+    c_grid = []
+    
+    for i in range(len(grid)):
+        c_grid.append([])
+        for j in range(len(grid[0])):
+            blob = grid[i][j]
+            c_pixels = find_centroid(blob)
+            c_grid[i].append(c_pixels)
+
+    return c_grid
+
 if __name__ == "__main__":
     a = np.array([[1, 1, 0], [1, 0, 0], [0, 0, 0]])
     (x,y) = find_centroid(a)
