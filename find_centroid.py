@@ -22,7 +22,7 @@ def find_centroid(arr):
     for i in range(len(weights_y)):
         centroid_y += i*weights_y[i]
 
-    return (centroid_x, centroid_y)
+    return PixelCoords(centroid_x, centroid_y)
 
 def centroid_grid(grid):
     c_grid = []
@@ -38,5 +38,5 @@ def centroid_grid(grid):
 
 if __name__ == "__main__":
     a = np.array([[1, 1, 0], [1, 0, 0], [0, 0, 0]])
-    (x,y) = find_centroid(a)
-    print("x coord: " + str(x) + ", y coord: " + str(y))
+    coords = find_centroid(a)
+    print("x coord: " + str(coords.x) + ", y coord: " + str(coords.y))
