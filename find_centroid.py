@@ -1,5 +1,14 @@
 import numpy as np
 
+class PixelCoords:
+    x = None
+    y = None
+
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+
 def find_centroid(arr):
     total_sum = np.sum(arr)
     weights_x = np.sum(arr, axis=0)/total_sum
@@ -17,7 +26,7 @@ def find_centroid(arr):
 
 def centroid_grid(grid):
     c_grid = []
-    
+
     for i in range(len(grid)):
         c_grid.append([])
         for j in range(len(grid[0])):
