@@ -1,5 +1,6 @@
 import numpy as np
 
+# Stores pixel coordinates
 class PixelCoords:
     x = None
     y = None
@@ -8,7 +9,12 @@ class PixelCoords:
         self.x = x
         self.y = y
 
-
+# Finds the centroid in one NumPy array
+#
+# params:
+#   - arr: NumPy array to find the centroid of
+#
+# returns: a PixelCoords object containing the centroid of arr
 def find_centroid(arr):
     total_sum = np.sum(arr)
     weights_x = np.sum(arr, axis=0)/total_sum
@@ -24,6 +30,12 @@ def find_centroid(arr):
 
     return PixelCoords(centroid_x, centroid_y)
 
+# Finds the centroids of each NumPy array in a grid
+#
+# params:
+#   - grid: 2D array where each element is a separate 2D NumPy array
+# returns: a 2D array where each element is a PixelCoords object
+#          storing the centroid of their respective NumPy array
 def centroid_grid(grid):
     c_grid = []
 
@@ -36,6 +48,7 @@ def centroid_grid(grid):
 
     return c_grid
 
+# Tests
 if __name__ == "__main__":
     a = np.array([[1, 1, 0], [1, 0, 0], [0, 0, 0]])
     coords = find_centroid(a)
