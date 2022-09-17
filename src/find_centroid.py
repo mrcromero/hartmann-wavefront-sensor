@@ -1,13 +1,5 @@
 import numpy as np
-
-# Stores pixel coordinates
-class PixelCoords:
-    x = None
-    y = None
-
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+from classes.pixelcoords import PixelCoords
 
 # Finds the centroid in one NumPy array
 #
