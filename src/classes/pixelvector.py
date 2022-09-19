@@ -1,3 +1,8 @@
+import sys
+
+# setting path
+sys.path.append('./')
+
 from .pixelcoords import PixelCoords
 
 # Stores pixel vector between two PixelCoords
