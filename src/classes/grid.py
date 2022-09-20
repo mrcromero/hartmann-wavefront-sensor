@@ -1,3 +1,8 @@
+import sys
+
+# setting path
+sys.path.append('./')
+
 
 # A grid is a matrix of Blobs
 class Grid:

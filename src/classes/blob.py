@@ -1,3 +1,8 @@
+import sys
+
+# setting path
+sys.path.append('./')
+
 import numpy as np
 from .pixelcoords import PixelCoords
 
