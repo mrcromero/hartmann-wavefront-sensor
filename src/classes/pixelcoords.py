@@ -1,3 +1,8 @@
+import sys
+
+# setting path
+sys.path.append('./')
+
 # Stores pixel coordinates
 class PixelCoords:
     x = None
