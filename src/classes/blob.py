@@ -44,4 +44,6 @@ class Blob:
 
     # Returns the vector from the blob's middle to its centroid
     def find_vector_to_centroid(self):
+        if self.centroid_coords == None:
+            self.find_centroid()
         return PixelVector(self.middle_coords, self.centroid_coords)
