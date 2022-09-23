@@ -26,3 +26,20 @@ class Grid:
                 c_grid[i].append(c_pixels)
 
         return c_grid
+
+    # Finds the vectors to centroids of each blob array in the grid
+    #
+    # returns: a 2D array where each element is a PixelVector object
+    #          storing the vector to centroid of their respective NumPy array
+    def find_vectors_to_centroids(self):
+        v_grid = []
+
+        for i in range(len(self.blob_mat)):
+            v_grid.append([])
+            for j in range(len(self.blob_mat[0])):
+                blob = self.blob_mat[i][j]
+                c_vector = blob.find_vector_to_centroid()
+                v_grid[i].append(c_vector)
+
+        return v_grid
+    
