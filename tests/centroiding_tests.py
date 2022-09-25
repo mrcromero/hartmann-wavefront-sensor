@@ -1,7 +1,9 @@
 import sys
+import pathlib
+
 
 # setting path
-sys.path.append('../')
+sys.path.append('/'.join(str(pathlib.Path(__file__).parent.resolve()).split('/')[:-1]))
 
 import numpy as np
 from src.classes.blob import Blob
