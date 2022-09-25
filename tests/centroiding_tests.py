@@ -30,7 +30,18 @@ def test_grid_centroid():
 
     grid = Grid(grid_matrix)
 
-    grid.find_centroids()
+    centroids = grid.find_centroids()
+
+    answers = [[(0.75, 0.25), (1, 0.8)], [(1, 1), (1, 1)]]
+
+    for i in range(len(centroids)):
+        for j in range(len(centroids[i])):
+            coords = centroids[i][j]
+            a = answers[i][j]
+            error_s = "Centroid coords for [{0},{1}] -- x: {2}, y: {3}".format(
+                i, j, coords.x, coords.y)
+            assert coords.x == a[0] and coords.y == a[1], error_s
+
 
 # Tests for checking centroiding
 
