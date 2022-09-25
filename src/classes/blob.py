@@ -17,8 +17,8 @@ class Blob:
     # pixel_mat is a NumPy array
     def __init__(self, pixel_mat):
         self.pixel_mat = pixel_mat
-        middle_x = len(pixel_mat)/2
-        middle_y = len(pixel_mat[0])/2
+        middle_x = sum([i for i in range(len(pixel_mat))])/len(pixel_mat)
+        middle_y = sum([i for i in range(len(pixel_mat[0]))])/len(pixel_mat[0])
         self.middle_coords = PixelCoords(middle_x, middle_y)
     
     # Finds the centroid Blob's centroid if it isn't defined. Otherwise,
