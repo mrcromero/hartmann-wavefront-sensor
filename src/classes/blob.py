@@ -31,6 +31,7 @@ class Blob:
         if self.centroid_coords == None:
             total_sum = np.sum(self.pixel_mat)
             if(total_sum == 0):
+                self.centroid_coords = self.middle_coords
                 return(self.middle_coords)
             weights_x = np.sum(self.pixel_mat, axis=0)/total_sum
             weights_y = np.sum(self.pixel_mat, axis=1)/total_sum
