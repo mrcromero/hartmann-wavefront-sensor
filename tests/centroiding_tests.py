@@ -88,4 +88,4 @@ def test_grid_centroid():
 if __name__ == "__main__":
     test_blob_centroid()
     test_grid_centroid()
-    print("All tests passed!")
+    print("All centroiding tests passed!")
