@@ -70,7 +70,7 @@ def test_grid_centroid():
     vectors = grid.find_vectors_to_centroids()
 
     answers_v = [[(-0.25, -0.75), (0, -0.2)], [(0, 0), (0, 0)]]
-    answers_l = [[(-0.3875, -1.1625), (0, -0.31)], [(0, 0), (0, 0)]]
+    answers_l = [[(-0.388, -1.162), (0, -0.31)], [(0, 0), (0, 0)]]
 
     for i in range(len(vectors)):
         for j in range(len(vectors[i])):
