@@ -9,6 +9,8 @@ from src.classes.imagereader import ImageReader
 def test_init_image_reader():
     a = ImageReader('tests/images/100.bmp')
     assert a.get_grid() is not None
+    assert a.center_x == 960
+    assert a.center_y == 540
 
 if __name__ == "__main__":
     test_init_image_reader()

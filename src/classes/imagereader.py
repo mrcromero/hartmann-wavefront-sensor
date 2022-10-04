@@ -24,26 +24,27 @@ class ImageReader:
     #   - for Grids is 7x7 Blobs
     def __init__(self, path, blob_size=140, grid_size=7):
         self.image = cv2.cvtColor(cv2.imread(path), cv2.COLOR_BGR2GRAY)
-        self.center_x = len(self.image)//2
-        self.center_y = len(self.image[0])//2
+        self.center_x = len(self.image[0])//2
+        self.center_y = len(self.image)//2
         self.blob_size = blob_size
         self.grid_size = grid_size
         self.get_grid()
 
-    def get_grid(self, x=center_x, y=center_y):
+    def get_grid(self, x=None, y=None):
         if self.grid != None:
-            if x != self.center_x or y != self.center_y:
+            if x != None or y != None:
                 self.center_x = x
                 self.center_y = y
             else:
                 return self.grid
         # Calculate grid using center_x and center_y and place in grid
+        
         grid = Grid([])
         self.grid = grid
         return grid
 
     def update_grid(self, delta_x, delta_y):
-        length_to_edge = self.grid_size/2
+        length_to_edge = (self.grid_size/2) * self.blob_size
         new_x = self.center_x + delta_x
         new_y = self.center_y + delta_y
         if (new_x-length_to_edge < 0 or
