@@ -51,9 +51,9 @@ def test_blob_vectoring():
     error_s = "Vector distances x: {0}, y: {1}".format(
         vector.x_vector, vector.y_vector)
     assert vector.x_vector == -0.25 and vector.y_vector == -0.75, error_s
-    assert vector.x_length == -0.3875 and vector.y_length == -1.1625, error_s
+    assert vector.x_length == -0.388 and vector.y_length == -1.162, error_s
 
-def test_grid_centroid():
+def test_grid_vectoring():
     a = Blob(np.array([[1, 1, 1], [1, 0, 0], [0, 0, 0]]))
     b = Blob(np.array([[1, 0, 1], [1, 1, 0], [0, 0, 1]]))
     c = Blob(np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]]))
@@ -86,6 +86,9 @@ def test_grid_centroid():
 # Tests for checking centroiding
 
 if __name__ == "__main__":
+    print("### Running Centroiding Tests ###")
     test_blob_centroid()
     test_grid_centroid()
-    print("All centroiding tests passed!")
+    test_blob_vectoring()
+    test_grid_vectoring()
+    print("### All centroiding tests passed! ###")
