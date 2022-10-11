@@ -13,6 +13,7 @@ class Blob:
     pixel_mat = None
     middle_coords = None
     centroid_coords = None
+    max_intensity = 0
 
     # pixel_mat is a NumPy array
     def __init__(self, pixel_mat):
@@ -20,7 +21,6 @@ class Blob:
         middle_x = len(pixel_mat[0])//2
         middle_y = len(pixel_mat)//2
         self.middle_coords = PixelCoords(middle_x, middle_y)
-        self.max_intensity = 0
 
     # Finds the max pixel intensity grayscale value (0-255) of a data set.
     def find_max_intensity(self):
@@ -34,7 +34,7 @@ class Blob:
     #           middle coords
     def find_centroid(self):
         if self.centroid_coords == None:
-            data_thresh = cv2.inRange(self.pixel_mat, 0.5 * self._max_intensity, 255) # FWHM masked data
+            data_thresh = cv2.inRange(self.pixel_mat, 0.5 * self.max_intensity, 255) # FWHM masked data
             #total_sum = np.sum(self.pixel_mat)
             total_sum = np.sum(data_thresh)
 
