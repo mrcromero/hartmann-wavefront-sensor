@@ -1,4 +1,5 @@
 import sys
+import numpy as np
 
 # setting path
 sys.path.append('./')
@@ -42,4 +43,16 @@ class Grid:
                 v_grid[i].append(c_vector)
 
         return v_grid
+
+    # Concatenates all the blobs in the grid into a single numpy array
+    #
+    # TODO: Add grid lines?
+    def get_grid_image(self):
+        concat_grid = []
+        for i in range(len(self.blob_mat)):
+            cur_row = []
+            for j in range(len(self.blob_mat[0])):
+                cur_row.append(self.blob_mat[i][j].pixel_mat)
+            concat_grid.append(np.hstack(tuple(cur_row)))
+        return np.vstack(tuple(concat_grid))
     
