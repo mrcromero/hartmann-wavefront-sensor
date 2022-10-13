@@ -14,11 +14,10 @@ def test_init_image_reader():
     assert a.center_y == 540
 
     print("# Displaying image and blobs #")
-    cv2.imshow('Original Image', a.image)
     cv2.imshow('Grid Image', a.grid.get_grid_image())
     print("# Press a key to continue #")
     cv2.waitKey()
-    
+    cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":

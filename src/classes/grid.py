@@ -1,5 +1,6 @@
 import sys
 import numpy as np
+import cv2
 
 # setting path
 sys.path.append('./')
@@ -44,15 +45,27 @@ class Grid:
 
         return v_grid
 
-    # Concatenates all the blobs in the grid into a single numpy array
-    #
-    # TODO: Add grid lines?
+    # Concatenates all the blobs in the grid into a single numpy array.
+    # Also adds grid lines to show blob grids
     def get_grid_image(self):
         concat_grid = []
         for i in range(len(self.blob_mat)):
             cur_row = []
             for j in range(len(self.blob_mat[0])):
-                cur_row.append(self.blob_mat[i][j].pixel_mat)
+                gray_blob = self.blob_mat[i][j].pixel_mat
+                cur_blob = cv2.cvtColor(gray_blob,cv2.COLOR_GRAY2RGB)
+                # Add grid lines
+                cur_blob[0,:,0] = 255
+                cur_blob[-1,:,0] = 255
+                cur_blob[:,0,0] = 255
+                cur_blob[:,-1,0] = 255
+                cur_row.append(cur_blob)
             concat_grid.append(np.hstack(tuple(cur_row)))
-        return np.vstack(tuple(concat_grid))
+        grid_image = np.vstack(tuple(concat_grid))
+        # Add grid lines
+        grid_image[0:2,:,0] = 255
+        grid_image[-3:-1,:,0] = 255
+        grid_image[:,0:2,0] = 255
+        grid_image[:,-3:-1,0] = 255
+        return grid_image
     
