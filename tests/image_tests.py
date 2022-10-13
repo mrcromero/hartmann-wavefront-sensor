@@ -13,15 +13,28 @@ def test_init_image_reader():
     assert a.center_x == 960
     assert a.center_y == 540
 
+    grid = a.get_grid()
+
     print("# Displaying image and blobs #")
-    cv2.imshow('Original Image', a.image)
-    cv2.imshow('Grid Image', a.grid.get_grid_image())
+    cv2.imshow('Grid Image', grid.get_grid_image())
     print("# Press a key to continue #")
     cv2.waitKey()
-    
+    cv2.destroyAllWindows()
+
+def grid_vector_image():
+    a = ImageReader('tests/images/800.bmp')
+
+    grid = a.get_grid()
+
+    print("# Displaying image and blobs #")
+    cv2.imshow('Grid Image', grid.get_vector_image())
+    print("# Press a key to continue #")
+    cv2.waitKey()
+    cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":
     print("### Running Image Tests ###")
     test_init_image_reader()
+    grid_vector_image()
     print("### All image tests passed! ###")

@@ -1,5 +1,6 @@
 import sys
 import numpy as np
+import cv2
 
 # setting path
 sys.path.append('./')
@@ -44,15 +45,66 @@ class Grid:
 
         return v_grid
 
-    # Concatenates all the blobs in the grid into a single numpy array
-    #
-    # TODO: Add grid lines?
+    # Concatenates all the blobs in the grid into a single numpy array.
+    # Also adds grid lines to show blob grids
     def get_grid_image(self):
         concat_grid = []
         for i in range(len(self.blob_mat)):
             cur_row = []
             for j in range(len(self.blob_mat[0])):
-                cur_row.append(self.blob_mat[i][j].pixel_mat)
+                gray_blob = self.blob_mat[i][j].pixel_mat
+                cur_blob = cv2.cvtColor(gray_blob,cv2.COLOR_GRAY2RGB)
+                # Add grid lines
+                cur_blob[0,:,0] = 255
+                cur_blob[-1,:,0] = 255
+                cur_blob[:,0,0] = 255
+                cur_blob[:,-1,0] = 255
+                cur_row.append(cur_blob)
             concat_grid.append(np.hstack(tuple(cur_row)))
-        return np.vstack(tuple(concat_grid))
+        grid_image = np.vstack(tuple(concat_grid))
+        # Add grid lines
+        grid_image[0:2,:,0] = 255
+        grid_image[-3:-1,:,0] = 255
+        grid_image[:,0:2,0] = 255
+        grid_image[:,-3:-1,0] = 255
+        return grid_image
+
+    # Gets the grid like get_grid_images, but also adds approximate centroid
+    # location and vectors
+    def get_vector_image(self):
+        # set values for vector drawing
+        arrow_color  = (0, 0, 255)
+        thickness = 2
+        concat_grid = []
+        for i in range(len(self.blob_mat)):
+            cur_row = []
+            for j in range(len(self.blob_mat[0])):
+                gray_blob = self.blob_mat[i][j].pixel_mat
+                centroid = self.blob_mat[i][j].find_centroid()
+                middle = self.blob_mat[i][j].middle_coords
+                cur_blob = cv2.cvtColor(gray_blob,cv2.COLOR_GRAY2RGB)
+                # Add grid lines
+                cur_blob[0,:,0] = 255
+                cur_blob[-1,:,0] = 255
+                cur_blob[:,0,0] = 255
+                cur_blob[:,-1,0] = 255
+                # Though centroid coordinates are sub-pixel values, they are
+                # rounded here just for visualization
+                # (y, x) indexing because numpy follows row, col indexing
+                cur_blob[round(centroid.y), round(centroid.x), 1] = 255
+                # Similarly, we will be rounding for the vector values
+                # (x, y) is expected by cv2 for pixel coordinates
+                start_coord = (round(middle.x), round(middle.y))
+                end_coord = (round(centroid.x), round(centroid.y))
+                cur_blob = cv2.arrowedLine(cur_blob, start_coord, end_coord,
+                    arrow_color, thickness)
+                cur_row.append(cur_blob)
+            concat_grid.append(np.hstack(tuple(cur_row)))
+        grid_image = np.vstack(tuple(concat_grid))
+        # Add grid lines
+        grid_image[0:2,:,0] = 255
+        grid_image[-3:-1,:,0] = 255
+        grid_image[:,0:2,0] = 255
+        grid_image[:,-3:-1,0] = 255
+        return grid_image
     

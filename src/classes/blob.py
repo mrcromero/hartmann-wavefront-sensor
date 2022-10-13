@@ -20,11 +20,8 @@ class Blob:
         self.pixel_mat = pixel_mat
         middle_x = len(pixel_mat[0])//2
         middle_y = len(pixel_mat)//2
-        self.middle_coords = PixelCoords(middle_x, middle_y)
-
-    # Finds the max pixel intensity grayscale value (0-255) of a data set.
-    def find_max_intensity(self):
         self.max_intensity = (np.amax(self.pixel_mat))
+        self.middle_coords = PixelCoords(middle_x, middle_y)
 
     # Finds the centroid Blob's centroid if it isn't defined. Otherwise,
     # calculate and store it
