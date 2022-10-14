@@ -10,8 +10,6 @@ from src.classes.imagereader import ImageReader
 def test_init_image_reader():
     a = ImageReader('tests/images/100.bmp')
     assert a.get_grid() is not None
-    assert a.center_x == 960
-    assert a.center_y == 540
 
     grid = a.get_grid()
 
@@ -22,7 +20,7 @@ def test_init_image_reader():
     cv2.destroyAllWindows()
 
 def grid_vector_image():
-    a = ImageReader('tests/images/800.bmp')
+    a = ImageReader('tests/images/200.bmp')
 
     grid = a.get_grid()
 

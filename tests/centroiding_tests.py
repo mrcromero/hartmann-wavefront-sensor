@@ -16,7 +16,7 @@ def test_blob_centroid():
     test_blob = Blob(a)
     coords = test_blob.find_centroid()
     error_s = "Centroid coords x: {0}, y: {1}".format(coords.x, coords.y)
-    assert coords.x == 0.75 and coords.y == 0.25, error_s
+    assert coords.x == 1 and coords.y == 1, error_s
 
 def test_grid_centroid():
     a = Blob(np.array([[1, 1, 1], [1, 0, 0], [0, 0, 0]]))
@@ -34,7 +34,7 @@ def test_grid_centroid():
 
     centroids = grid.find_centroids()
 
-    answers = [[(0.75, 0.25), (1, 0.8)], [(1, 1), (1, 1)]]
+    answers = [[(1, 1), (1, 1)], [(1, 1), (1, 1)]]
 
     for i in range(len(centroids)):
         for j in range(len(centroids[i])):
