@@ -24,7 +24,7 @@ class ImageReader:
     # Default values:
     #   - for Blobs is 140x140 pixels
     #   - for Grids is 7x7 Blobs
-    def __init__(self, path, blob_size=100, grid_size=7):
+    def __init__(self, path, blob_size=140, grid_size=7):
         self.image = np.array(cv2.cvtColor(cv2.imread(path), cv2.COLOR_BGR2GRAY))
         self.center_x = len(self.image[0])//2
         self.center_y = len(self.image)//2
@@ -32,6 +32,8 @@ class ImageReader:
         self.grid_size = grid_size
         self.get_grid()
 
+    # Returns the grid created by the image. Creates the grid if specific
+    # center coordinates are given or if the grid doesn't exist yet
     def get_grid(self, x=None, y=None):
         if self.grid != None:
             if x != None or y != None:
@@ -39,10 +41,20 @@ class ImageReader:
                 self.center_y = y
             else:
                 return self.grid
+        # Calibrate to the centroid of the center grid
+        initial_x_start = self.center_x - (self.blob_size//2)
+        initial_y_start = self.center_y - (self.blob_size//2)
+        initial_blob = self.image[initial_y_start:initial_y_start+self.blob_size,
+                                    initial_x_start:initial_x_start+self.blob_size]
+        calibration_blob = Blob(initial_blob)
+        self.center_x = round(calibration_blob.find_centroid().x) + initial_x_start
+        self.center_y = round(calibration_blob.find_centroid().y) + initial_y_start
+        
         # Calculate grid using center_x and center_y and place in grid
         edge_dist = math.ceil((self.grid_size/2) * self.blob_size)-1
         x_edges = [(self.center_x-edge_dist) + (self.blob_size*i) for i in range(self.grid_size+1)]
         y_edges = [(self.center_y-edge_dist) + (self.blob_size*i) for i in range(self.grid_size+1)]
+
 
         blob_array = []
         for i in range(self.grid_size):
@@ -59,6 +71,7 @@ class ImageReader:
         self.grid = grid
         return grid
 
+    # Grid updates according to changes in x and y
     def update_grid(self, delta_x, delta_y):
         length_to_edge = math.ceil((self.grid_size/2) * self.blob_size)
         new_x = self.center_x + delta_x
