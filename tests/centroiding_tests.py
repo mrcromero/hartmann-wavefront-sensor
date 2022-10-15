@@ -50,8 +50,8 @@ def test_blob_vectoring():
     vector = test_blob.find_vector_to_centroid()
     error_s = "Vector distances x: {0}, y: {1}".format(
         vector.x_vector, vector.y_vector)
-    assert vector.x_vector == -0.25 and vector.y_vector == -0.75, error_s
-    assert vector.x_length == -0.388 and vector.y_length == -1.162, error_s
+    assert vector.x_vector == 0 and vector.y_vector == 0, error_s
+    assert vector.x_length == 0 and vector.y_length == 0, error_s
 
 def test_grid_vectoring():
     a = Blob(np.array([[1, 1, 1], [1, 0, 0], [0, 0, 0]]))
@@ -69,8 +69,8 @@ def test_grid_vectoring():
 
     vectors = grid.find_vectors_to_centroids()
 
-    answers_v = [[(-0.25, -0.75), (0, -0.2)], [(0, 0), (0, 0)]]
-    answers_l = [[(-0.388, -1.162), (0, -0.31)], [(0, 0), (0, 0)]]
+    answers_v = [[(0, 0), (0, 0)], [(0, 0), (0, 0)]]
+    answers_l = [[(0, 0), (0, 0)], [(0, 0), (0, 0)]]
 
     for i in range(len(vectors)):
         for j in range(len(vectors[i])):
