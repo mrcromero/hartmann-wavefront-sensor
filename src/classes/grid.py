@@ -97,7 +97,7 @@ class Grid:
                 start_coord = (round(middle.x), round(middle.y))
                 end_coord = (round(centroid.x), round(centroid.y))
                 cur_blob = cv2.arrowedLine(cur_blob, start_coord, end_coord,
-                    arrow_color, thickness)
+                    arrow_color, thickness, tipLength=0.3)
                 cur_row.append(cur_blob)
             concat_grid.append(np.hstack(tuple(cur_row)))
         grid_image = np.vstack(tuple(concat_grid))
