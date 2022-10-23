@@ -7,6 +7,9 @@ sys.path.append('/'.join(str(pathlib.Path(__file__).parent.resolve()).split('/')
 
 from src.classes.imagereader import ImageReader
 
+def test_image_reader_calib():
+    a = ImageReader('tests/images/800.bmp')
+
 def test_init_image_reader():
     a = ImageReader('tests/images/100.bmp')
     assert a.get_grid() is not None
@@ -33,6 +36,7 @@ def grid_vector_image():
 
 if __name__ == "__main__":
     print("### Running Image Tests ###")
-    test_init_image_reader()
-    grid_vector_image()
+    test_image_reader_calib()
+    # test_init_image_reader()
+    # grid_vector_image()
     print("### All image tests passed! ###")
