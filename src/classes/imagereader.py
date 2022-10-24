@@ -15,7 +15,8 @@ class ImageReader:
     image = None
     center_x = None
     center_y = None
-    grid = None
+    blobs = []
+    centers = []
 
     # The way the init works is subject to change depending on how image
     # streaming works
@@ -30,37 +31,39 @@ class ImageReader:
         self.centroid_fine_grid()
 
     def centroid_coarse_grid(self):
-        bw = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-
         # Threshold the image. This uses Otsu's thresholding method
+        bw = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
         thresh = cv2.threshold(bw, 0, 255, cv2.THRESH_OTSU)[1]
+
+        cv2.imshow('threshold', thresh)
+        cv2.waitKey()
 
         # Automate smoothing so we get an apporpriate number of components
         num_labels = 1000
         stel_size = 3
-        while num_labels > 150:
+        stats = None
+        while num_labels > 120:
             # Smooth edges
             kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,
                 (stel_size,stel_size))
             opened = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
-
             # Detect connected components
             output = cv2.connectedComponentsWithStats(
                 opened, 4, cv2.CV_32S)
             (num_labels, labels, stats, centroids) = output
             stel_size += num_labels//100
-
         
+        cv2.imshow('smoothed', opened)
+        cv2.waitKey()
+
         # Automatically get the number of expected labels in the grid
         x_intervals = list(range(0, len(self.image[0])+50, 50))
         y_intervals = list(range(0, len(self.image)+50, 50))
-
         # Bin the centroids
         centroids_x = pd.cut(centroids[:, 0],
             bins=x_intervals, labels=x_intervals[:-1])
         centroids_y = pd.cut(centroids[:, 1],
             bins=y_intervals, labels=y_intervals[:-1])
-        
         # Count the bin occurences
         cY_counts = Counter(centroids_y).values()
         cX_counts = Counter(centroids_x).values()
@@ -86,7 +89,6 @@ class ImageReader:
                 w = stats[i, cv2.CC_STAT_WIDTH]
                 h = stats[i, cv2.CC_STAT_HEIGHT]
                 area = stats[i, cv2.CC_STAT_AREA]
-                
                 # filter small components depending on a percentage of the
                 # max area
                 if area > (max_area*area_factor):
@@ -101,6 +103,10 @@ class ImageReader:
                             (int(cX), int(cY)), 4, (0, 0, 255), -1)
                     final_centroids.append([cX, cY])
             area_factor+=((coarse_num_labels-100)//10) * 0.01
+
+        self.centers = final_centroids
+
+        # Display found and labeled components
         cv2.imshow('coarse components', mask)
         cv2.waitKey()
         cv2.imshow('coarse labeled components', labeled_mask)
@@ -108,8 +114,60 @@ class ImageReader:
         cv2.destroyAllWindows()
 
     def centroid_fine_grid(self):
-        return
+        bw = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        
+        # Estimate the radius of the blobs
+        norms = []
+        for start in self.centers:
+            min_dist = None
+            for end in self.centers:
+                dist = np.linalg.norm([end[0]-start[0], end[1]-start[1]])
+                if (start != end) and (min_dist == None or dist < min_dist):
+                    min_dist = dist
+            norms.append(min_dist)
+        radius = np.average(norms)//2
+        
+        # Get the subimages for each blob
+        for i in range(len(self.centers)):
+            (cX, cY) = self.centers[i]
+            x_start = int(int(cX)-radius)
+            x_end = int(int(cX)+radius)
+            y_start = int(int(cY)-radius)
+            y_end = int(int(cY)+radius)
+            # Make sure the blobs are within range for proper centroiding (not
+            # clipped at the edge of the picture)
+            if (x_start >= 0 and x_end < len(self.image[0]) and y_start >= 0 and y_end < len(self.image)):
+                blob_mat = bw[y_start:y_end, x_start:x_end]
+                # Convert the subimages to blobs to calculate centroids
+                self.blobs.append(Blob(blob_mat, cX, cY))
 
+    def display_vectors(self):
+        new_image = self.image.copy()
+        for i in range(len(self.blobs)):
+            blob = self.blobs[i]
+            centroid = blob.find_centroid()
+            # Get the location of the subimage
+            cX = blob.i_center_coords.x
+            cY = blob.i_center_coords.y
+            # Calcualte coordinates for drawings
+            length = (len(blob.pixel_mat)//2)-1
+            x_start = int(int(cX)-length)
+            x_end = int(int(cX)+length)
+            y_start = int(int(cY)-length)
+            y_end = int(int(cY)+length)
+            # Calculate centroid coordinates
+            mX = x_start+centroid.x
+            mY = y_start+centroid.y
+            start_coords = (int(cX), int(cY))
+            end_coords = (int(mX), int(mY))
+            # Draw box around, dot on the centers, and a vector to the centroid
+            cv2.rectangle(new_image, 
+                            (x_start, y_start), (x_end, y_end), (0, 255, 0), 3)
+            cv2.circle(new_image, 
+                            (int(cX), int(cY)), 2, (0, 0, 255), -1)
+            cv2.arrowedLine(new_image, start_coords, end_coords,
+                    (255, 0, 0), thickness=3, tipLength=0.3)
+        return new_image
     # Returns the grid created by the image. Creates the grid if specific
     # center coordinates are given or if the grid doesn't exist yet
     def get_grid(self, x=None, y=None):

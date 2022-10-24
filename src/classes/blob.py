@@ -10,17 +10,19 @@ from .pixelvector import PixelVector
 # A blob is a matrix of pixels with intensity values
 
 class Blob:
+    i_center_coords = None
     pixel_mat = None
     middle_coords = None
     centroid_coords = None
     max_intensity = 0
 
     # pixel_mat is a NumPy array
-    def __init__(self, pixel_mat):
+    def __init__(self, pixel_mat, i_x=0, i_y=0):
         self.pixel_mat = pixel_mat
         middle_x = len(pixel_mat[0])//2
         middle_y = len(pixel_mat)//2
         self.max_intensity = (np.amax(self.pixel_mat))
+        self.i_center_coords = PixelCoords(i_x, i_y)
         self.middle_coords = PixelCoords(middle_x, middle_y)
 
     # Finds the centroid Blob's centroid if it isn't defined. Otherwise,

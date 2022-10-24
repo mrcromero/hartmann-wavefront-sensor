@@ -9,6 +9,9 @@ from src.classes.imagereader import ImageReader
 
 def test_image_reader_calib():
     a = ImageReader('tests/images/800.bmp')
+    cv2.imshow('Grid Image', a.display_vectors())
+    cv2.waitKey()
+    cv2.destroyAllWindows()
 
 def test_init_image_reader():
     a = ImageReader('tests/images/100.bmp')
