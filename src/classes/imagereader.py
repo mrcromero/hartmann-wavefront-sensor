@@ -39,10 +39,13 @@ class ImageReader:
         cv2.waitKey()
 
         # Automate smoothing so we get an apporpriate number of components
-        num_labels = 1000
+        num_labels = len(self.image)*len(self.image[0])
+        prev_num_labels = num_labels*2
         stel_size = 3
         stats = None
-        while num_labels > 120:
+        while num_labels*1.10 < prev_num_labels:
+            print(num_labels)
+            prev_num_labels = num_labels
             # Smooth edges
             kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,
                 (stel_size,stel_size))
@@ -77,7 +80,7 @@ class ImageReader:
         max_area = max(stats[1:, cv2.CC_STAT_AREA])
         num_grid_elements = grid_x * grid_y
         final_centroids = []
-        while (coarse_num_labels > num_grid_elements):
+        while (coarse_num_labels >= num_grid_elements):
             final_centroids = []
             mask = bw.copy()
             mask[::] = 0
