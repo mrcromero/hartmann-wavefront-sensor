@@ -119,6 +119,7 @@ class ImageReader:
         self.blob_size = int(radius*2)
         
         # Get the subimages for each blob
+        labeled_mask = self.image.copy()
         new_centers = []
         for i in range(len(self.centers)):
             (cX, cY) = self.centers[i]
@@ -130,13 +131,18 @@ class ImageReader:
             # clipped at the edge of the picture)
             if (x_start >= 0 and x_end < len(self.image[0]) and y_start >= 0 and y_end < len(self.image)):
                 blob_mat = bw[y_start:y_end, x_start:x_end]
+                cv2.rectangle(labeled_mask, 
+                    (x_start, y_start), (x_end, y_end), (0, 255, 0), 3)
                 # Convert the subimages to blobs to calculate centroids
                 new_centers.append(self.centers[i])
                 self.blobs.append(Blob(blob_mat, cX, cY))
         self.centers = new_centers
+        cv2.imshow('fine labeled components', labeled_mask)
+        cv2.waitKey()
     
     def fit_grid(self):
         bw = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        thresh = cv2.threshold(bw, 0, 255, cv2.THRESH_OTSU)[1]
         self.get_grid_size()
 
         # Create the kernel for cross-correlation. This is a perfect grid
@@ -153,32 +159,34 @@ class ImageReader:
         for i in range(self.grid_len):
             cols.append(row_kernel)
         grid_kernel = np.vstack(tuple(cols))
+        cv2.imshow('kernel', grid_kernel*255)
+        cv2.waitKey()      
 
 
         # Perform cross-correlation on all values and get the max's index
-        radius = self.blob_size/2
+        radius = self.blob_size//2
         (grid_len_size, grid_width_size) = np.shape(grid_kernel)
         max = 0
         pos = 0
         grid = []
         for i in range(len(self.centers)):
             (cX, cY) = self.centers[i]
-            x_start = int(cX-(grid_width_size//2))
-            y_start = int(cY-(grid_len_size//2))
-            x_end = int(cX+(grid_width_size//2))
-            y_end = int(cY+(grid_len_size//2))
+            x_start = int(cX-(grid_width_size//2 if self.grid_width%2 == 1 else (grid_width_size//2)-radius))
+            y_start = int(cY-(grid_len_size//2 if self.grid_len%2 == 1 else (grid_len_size//2)-radius))
+            x_end = int(cX+(grid_width_size//2 if self.grid_width%2 == 1 else (grid_width_size//2)+radius))
+            y_end = int(cY+(grid_len_size//2 if self.grid_len%2 == 1 else (grid_len_size//2)+radius))
             if (x_start >= 0 and x_end < len(self.image[0]) and y_start >= 0 and y_end < len(self.image)):
-                grid_image = bw[y_start:y_end, x_start:x_end]
+                grid_image = thresh[y_start:y_end, x_start:x_end]
                 cc_val = (grid_image*grid_kernel).sum()
                 if cc_val > max:
                     max = cc_val
                     pos = i
-                    grid = grid_image.copy()
+                    grid = bw[y_start:y_end, x_start:x_end]
         
         labeled_mask = self.image.copy()
         (cX, cY) = self.centers[pos]
-        x_start = int(cX-(grid_width_size//2))
-        y_start = int(cY-(grid_len_size//2))
+        x_start = int(cX-(grid_width_size//2 if self.grid_width%2 == 1 else (grid_width_size//2)-radius))
+        y_start = int(cY-(grid_len_size//2 if self.grid_len%2 == 1 else (grid_len_size//2)-radius))
         cv2.rectangle(labeled_mask, (x_start, y_start),
             (x_start + grid_width_size, y_start + grid_len_size), (0, 255, 0), 3)
         cv2.imshow('fit grid', labeled_mask)
