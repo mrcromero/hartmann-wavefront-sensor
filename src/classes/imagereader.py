@@ -144,10 +144,9 @@ class ImageReader:
         cv2.waitKey()
     
     def get_grid_size(self):
-        # Grid size values are assumed as 3x3 for now. Maybe there will be some way
-        # to determine them later?
-        self.grid_len = 7
-        self.grid_width = 7
+        # Grid size values are assumed as 5x5
+        self.grid_len = 5
+        self.grid_width = 5
 
     def set_kernel(self):
         # Create the kernel for cross-correlation. This is a perfect grid
