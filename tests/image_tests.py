@@ -8,7 +8,7 @@ sys.path.append('/'.join(str(pathlib.Path(__file__).parent.resolve()).split('/')
 from src.classes.imagereader import ImageReader
 
 def test_init_image_reader():
-    a = ImageReader('tests/images/400.bmp')
+    a = ImageReader('tests/images/Masked_200.bmp')
     assert a.grid is not None
 
     grid = a.grid
@@ -20,7 +20,7 @@ def test_init_image_reader():
     cv2.destroyAllWindows()
 
 def grid_vector_image():
-    a = ImageReader('tests/images/400.bmp')
+    a = ImageReader('tests/images/Masked_200.bmp')
 
     grid = a.grid
 
