@@ -181,7 +181,7 @@ class ImageReader:
                     pos = i
         return pos
 
-    def get_grid_obeject(self, grid):
+    def get_grid_object(self, grid):
         # Get new blobs after fitting the grid
         blob_size = int(self.radius*2)
         x_edges = [0 + (blob_size*i) for i in range(self.grid_width+1)]
@@ -226,5 +226,5 @@ class ImageReader:
         cv2.imshow('fit grid', labeled_mask)
         cv2.waitKey()
 
-        new_grid = self.get_grid_object(self, grid)
+        new_grid = self.get_grid_object(grid)
         self.grid = new_grid
