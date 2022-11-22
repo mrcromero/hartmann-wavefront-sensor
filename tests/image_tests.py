@@ -6,6 +6,7 @@ import cv2
 sys.path.append('/'.join(str(pathlib.Path(__file__).parent.resolve()).split('/')[:-1]))
 
 from src.classes.imagereader import ImageReader
+from src.classes.zernikesolver import ZernikeSolver
 
 def test_init_image_reader():
     a = ImageReader('tests/images/Masked_200.bmp')
@@ -32,9 +33,17 @@ def grid_vector_image():
     cv2.waitKey()
     cv2.destroyAllWindows()
 
+def test_wavefront_recon():
+    a = ImageReader('tests/images/Masked_200.bmp')
+    blob_size = 140
+    ap_size = 0
+    print(ZernikeSolver(a.grid, blob_size, ap_size).solve())
+
+
 
 if __name__ == "__main__":
     print("### Running Image Tests ###")
     #test_init_image_reader()
-    grid_vector_image()
+    #grid_vector_image()
+    test_wavefront_recon()
     print("### All image tests passed! ###")

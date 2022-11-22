@@ -9,9 +9,11 @@ sys.path.append('./')
 # A grid is a matrix of Blobs
 class Grid:
     blob_mat = None
+    size = 0
 
     def __init__(self, blob_mat):
         self.blob_mat = blob_mat
+        self.size = len(blob_mat)**2
     
     # Finds the centroids of each blob array in the grid
     #
