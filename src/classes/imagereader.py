@@ -1,4 +1,3 @@
-from email.mime import image
 import sys
 import cv2
 import math
