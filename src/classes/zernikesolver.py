@@ -17,16 +17,13 @@ class ZernikeSolver:
         self.grid_vecs_to_array()
         self.calc_t_matrix()
 
-    # Converts the coordinates of the grid to an array
+    # Converts the coordinates of the grid to an array for x and y
     def grid_coord_to_array(self):
-        # This should be an array of tuples
         blob_vec = np.reshape(self.grid.blob_mat, (self.grid.size))
-        # Right now just uses the middle coordinates, waiting for Soh to do the
-        # math for this rn
         self.coord_array_x = [b.i_center_coords.x for b in blob_vec]
         self.coord_array_y = [b.i_center_coords.y for b in blob_vec]
 
-    # Gets the vectors of a grid and converts it to a vector
+    # Gets the vectors of a grid and converts it to an array
     def grid_vecs_to_array(self):
         vecs = np.reshape(self.grid.find_vectors_to_centroids(), (self.grid.size))
         self.vector_array = [v.x_length for v in vecs] + [v.y_length for v in vecs]
@@ -77,5 +74,8 @@ class ZernikeSolver:
             )
 
     # Solves wavefront reconstruction and returns the Zernike coefficients
+    #
+    # returns: a vector of the coefficients of the Zernike functions which
+    #          describes the light wave
     def solve(self):
         return np.matmul(self.t_matrix, self.vector_array)

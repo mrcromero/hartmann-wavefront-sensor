@@ -20,6 +20,7 @@ class ImageReader:
     grid_width = 0
     grid_len_size = 0
     grid_width_size = 0
+    aperture_rad = 0
     blob_size = 0
     radius = 0
     blobs = []
@@ -39,6 +40,18 @@ class ImageReader:
         self.centroid_fine_grid()
         self.fit_grid()
 
+    # Gets size of the grid. We are assuming this will be constant
+    def get_grid_size(self):
+        # Grid size values are assumed as 5x5
+        self.grid_len = 5
+        self.grid_width = 5
+
+    # Gets the size of the aperture. We are assuming this will be constant
+    def get_aperture_size(self):
+        # Grid size is assumed to be 1000px, so radius is 500px
+        self.aperture_rad = 500
+
+    # Performs coarse grid automation -- finds possible blob locations
     def centroid_coarse_grid(self):
         # Threshold the image. This uses Otsu's thresholding method
         bw = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
@@ -106,6 +119,7 @@ class ImageReader:
         cv2.waitKey()
         cv2.destroyAllWindows()
 
+    # Performs fine grid automation -- finds actual blob locations and sizes
     def centroid_fine_grid(self):
         bw = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
         
@@ -141,67 +155,8 @@ class ImageReader:
         self.centers = new_centers
         cv2.imshow('fine labeled components', labeled_mask)
         cv2.waitKey()
-    
-    def get_grid_size(self):
-        # Grid size values are assumed as 5x5
-        self.grid_len = 5
-        self.grid_width = 5
 
-    def set_kernel(self):
-        # Create the kernel for cross-correlation. This is a perfect grid
-        stel_size = int(self.radius*2)
-        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,
-            (stel_size,stel_size))
-        row_kernel = []
-        rows = [kernel]*self.grid_width
-        row_kernel = np.hstack(tuple(rows))
-        cols = [row_kernel]*self.grid_len
-        self.grid_kernel = np.vstack(tuple(cols))
-        (self.grid_len_size, self.grid_width_size) = np.shape(self.grid_kernel)
-        cv2.imshow('kernel', self.grid_kernel*255)
-        cv2.waitKey()
-    
-    def cross_correlation(self):
-        bw = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-        thresh = cv2.threshold(bw, 0, 255, cv2.THRESH_OTSU)[1]
-        max_val = 0
-        pos = 0
-        for i in range(len(self.centers)):
-            (cX, cY) = self.centers[i]
-            x_start = int(cX-(self.grid_width_size//2 if self.grid_width%2 == 1 else (self.grid_width_size//2)-self.radius))
-            y_start = int(cY-(self.grid_len_size//2 if self.grid_len%2 == 1 else (self.grid_len_size//2)-self.radius))
-            x_end = int(cX+(self.grid_width_size//2 if self.grid_width%2 == 1 else (self.grid_width_size//2)+self.radius))
-            y_end = int(cY+(self.grid_len_size//2 if self.grid_len%2 == 1 else (self.grid_len_size//2)+self.radius))
-            if (x_start >= 0 and x_end < len(self.image[0]) and y_start >= 0 and y_end < len(self.image)):
-                grid_image = thresh[y_start:y_end, x_start:x_end]
-                cc_val = (grid_image*self.grid_kernel).sum()
-                if cc_val > max_val:
-                    max_val = cc_val
-                    pos = i
-        return pos
-
-    def get_grid_object(self, grid, y_shift, x_shift):
-        # Get new blobs after fitting the grid
-        blob_size = int(self.radius*2)
-        x_edges = [0 + (blob_size*i) for i in range(self.grid_width+1)]
-        y_edges = [0 + (blob_size*i) for i in range(self.grid_len+1)]
-        blob_array = []
-        for i in range(self.grid_len):
-            blob_array.append([])
-            for j in range(self.grid_width):
-                start_x = x_edges[j]
-                start_y = y_edges[i]
-                end_x = x_edges[j+1]
-                end_y = y_edges[i+1]
-                # These values are used for converting to the new coordinate
-                # system for wavefront reconstruction
-                center_x = ((start_x+end_x)//2) + y_shift
-                center_y = ((start_y+end_y)//2) + x_shift
-                blob_mat = grid[start_y:end_y, start_x:end_x]
-                blob_array[i].append(Blob(blob_mat, center_x, center_y))
-        return Grid(blob_array)
-
-
+    # Performs grid fitting via cross-correlation of an "ideal" grid
     def fit_grid(self):
         bw = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
         self.get_grid_size()
@@ -229,5 +184,75 @@ class ImageReader:
         cv2.imshow('fit grid', labeled_mask)
         cv2.waitKey()
 
+        self.get_aperture_size()
+
         new_grid = self.get_grid_object(grid, y_start-cY, x_start-cX)
         self.grid = new_grid
+
+    # Sets the kernel for cross-correlation
+    def set_kernel(self):
+        # Create the kernel for cross-correlation. This is a perfect grid
+        stel_size = int(self.radius*2)
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,
+            (stel_size,stel_size))
+        row_kernel = []
+        rows = [kernel]*self.grid_width
+        row_kernel = np.hstack(tuple(rows))
+        cols = [row_kernel]*self.grid_len
+        self.grid_kernel = np.vstack(tuple(cols))
+        (self.grid_len_size, self.grid_width_size) = np.shape(self.grid_kernel)
+        cv2.imshow('kernel', self.grid_kernel*255)
+        cv2.waitKey()
+    
+    # Cycles through the found blobs and performs cross-correlation to find the
+    # optimum spot for the grid
+    #
+    # returns: the position in the centers array for the optimum grid position
+    def cross_correlation(self):
+        bw = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        thresh = cv2.threshold(bw, 0, 255, cv2.THRESH_OTSU)[1]
+        max_val = 0
+        pos = 0
+        for i in range(len(self.centers)):
+            (cX, cY) = self.centers[i]
+            x_start = int(cX-(self.grid_width_size//2 if self.grid_width%2 == 1 else (self.grid_width_size//2)-self.radius))
+            y_start = int(cY-(self.grid_len_size//2 if self.grid_len%2 == 1 else (self.grid_len_size//2)-self.radius))
+            x_end = int(cX+(self.grid_width_size//2 if self.grid_width%2 == 1 else (self.grid_width_size//2)+self.radius))
+            y_end = int(cY+(self.grid_len_size//2 if self.grid_len%2 == 1 else (self.grid_len_size//2)+self.radius))
+            # Check if the grid will be outside of the image
+            if (x_start >= 0 and x_end < len(self.image[0]) and y_start >= 0 and y_end < len(self.image)):
+                # Get the sub-grid and perform cross-correlation to check fit
+                grid_image = thresh[y_start:y_end, x_start:x_end]
+                cc_val = (grid_image*self.grid_kernel).sum()
+                if cc_val > max_val:
+                    max_val = cc_val
+                    pos = i
+        return pos
+
+    # Gets the new Grid object based on the given grid
+    #
+    # args: grid -- the grid matrix
+    #       y_shift -- the shift in the y-axis to normalize blob positions
+    #       x_shift -- the shift in the x-axis to normalize blob positions
+    #
+    # returns: new Grid object
+    def get_grid_object(self, grid, y_shift, x_shift):
+        # Get new blobs after fitting the grid
+        blob_size = int(self.radius*2)
+        x_edges = [0 + (blob_size*i) for i in range(self.grid_width+1)]
+        y_edges = [0 + (blob_size*i) for i in range(self.grid_len+1)]
+        blob_array = []
+        for i in range(self.grid_len):
+            blob_array.append([])
+            for j in range(self.grid_width):
+                start_x = x_edges[j]
+                start_y = y_edges[i]
+                end_x = x_edges[j+1]
+                end_y = y_edges[i+1]
+                # These values are used for normalizing the positions of the
+                # grid
+                center_x = (((start_x+end_x)//2) + y_shift)/self.aperture_rad
+                center_y = (((start_y+end_y)//2) + x_shift)/self.aperture_rad
+                blob_mat = grid[start_y:end_y, start_x:end_x]
+                blob_array[i].append(Blob(blob_mat, center_x, center_y))
+        return Grid(blob_array)
