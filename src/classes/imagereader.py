@@ -180,7 +180,7 @@ class ImageReader:
                     pos = i
         return pos
 
-    def get_grid_object(self, grid):
+    def get_grid_object(self, grid, y_shift, x_shift):
         # Get new blobs after fitting the grid
         blob_size = int(self.radius*2)
         x_edges = [0 + (blob_size*i) for i in range(self.grid_width+1)]
@@ -193,8 +193,12 @@ class ImageReader:
                 start_y = y_edges[i]
                 end_x = x_edges[j+1]
                 end_y = y_edges[i+1]
+                # These values are used for converting to the new coordinate
+                # system for wavefront reconstruction
+                center_x = ((start_x+end_x)//2) + y_shift
+                center_y = ((start_y+end_y)//2) + x_shift
                 blob_mat = grid[start_y:end_y, start_x:end_x]
-                blob_array[i].append(Blob(blob_mat))
+                blob_array[i].append(Blob(blob_mat, center_x, center_y))
         return Grid(blob_array)
 
 
@@ -225,5 +229,5 @@ class ImageReader:
         cv2.imshow('fit grid', labeled_mask)
         cv2.waitKey()
 
-        new_grid = self.get_grid_object(grid)
+        new_grid = self.get_grid_object(grid, y_start-cY, x_start-cX)
         self.grid = new_grid

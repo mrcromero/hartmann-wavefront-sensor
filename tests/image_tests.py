@@ -37,7 +37,8 @@ def test_wavefront_recon():
     a = ImageReader('tests/images/Masked_200.bmp')
     blob_size = 140
     ap_size = 0
-    print(ZernikeSolver(a.grid, blob_size, ap_size).solve())
+    c = ZernikeSolver(a.grid, blob_size, ap_size).solve()
+    print(c)
 
 
 
