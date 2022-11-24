@@ -38,7 +38,8 @@ def test_wavefront_recon():
     blob_size = 140
     ap_size = 0
     c = ZernikeSolver(a.grid, blob_size, ap_size).solve()
-    print(c)
+    for i in range(len(c)):
+        print("C" + str(i) + ": " + str(c[i]))
 
 
 
