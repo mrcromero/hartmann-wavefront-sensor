@@ -51,15 +51,21 @@ class ImageReader:
         # Grid size is assumed to be 1000px, so radius is 500px
         self.aperture_rad = 500
 
-    # Performs coarse grid automation -- finds possible blob locations
-    def centroid_coarse_grid(self):
-        # Threshold the image. This uses Otsu's thresholding method
-        bw = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-        thresh = cv2.threshold(bw, 0, 255, cv2.THRESH_OTSU)[1]
+    # Gets the radius size (distance between blobs)
+    def get_radius_size(self):
+        # Estimate the radius of the blobs
+        # norms = []
+        # for start in self.centers:
+        #     min_dist = None
+        #     for end in self.centers:
+        #         dist = np.linalg.norm([end[0]-start[0], end[1]-start[1]])
+        #         if (start != end) and (min_dist == None or dist < min_dist):
+        #             min_dist = dist
+        #     norms.append(min_dist)
+        # self.radius = np.average(norms)//2
+        self.radius = 172//2
 
-        cv2.imshow('threshold', thresh)
-        cv2.waitKey()
-
+    def smooth_image(self, thresh):
         # Automate smoothing so we get an apporpriate number of components
         num_labels = len(self.image)*len(self.image[0])
         prev_num_labels = num_labels*2
@@ -79,7 +85,9 @@ class ImageReader:
         
         cv2.imshow('smoothed', opened)
         cv2.waitKey()
-
+        return (labels, stats, centroids, num_labels)
+    
+    def filter_small_comps(self, bw, stats, centroids, labels, num_labels):
         # Filter small components automatically
         area_factor = 0.2
         average_area = np.mean(stats[1:, cv2.CC_STAT_AREA])
@@ -109,9 +117,6 @@ class ImageReader:
                 final_centroids.append([cX, cY])
         area_factor+= 0.01
 
-
-        self.centers = final_centroids
-
         # Display found and labeled components
         cv2.imshow('coarse components', mask)
         cv2.waitKey()
@@ -119,21 +124,9 @@ class ImageReader:
         cv2.waitKey()
         cv2.destroyAllWindows()
 
-    # Performs fine grid automation -- finds actual blob locations and sizes
-    def centroid_fine_grid(self):
-        bw = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-        
-        # Estimate the radius of the blobs
-        norms = []
-        for start in self.centers:
-            min_dist = None
-            for end in self.centers:
-                dist = np.linalg.norm([end[0]-start[0], end[1]-start[1]])
-                if (start != end) and (min_dist == None or dist < min_dist):
-                    min_dist = dist
-            norms.append(min_dist)
-        self.radius = np.average(norms)//2
-        
+        return mask, final_centroids
+
+    def display_component_image(self):
         # Get the subimages for each blob
         labeled_mask = self.image.copy()
         new_centers = []
@@ -155,39 +148,6 @@ class ImageReader:
         self.centers = new_centers
         cv2.imshow('fine labeled components', labeled_mask)
         cv2.waitKey()
-
-    # Performs grid fitting via cross-correlation of an "ideal" grid
-    def fit_grid(self):
-        bw = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-        self.get_grid_size()
-
-        # Create the kernel for cross-correlation. This is a perfect grid
-        self.set_kernel()
-
-        # Perform cross-correlation on all values and get the max's index
-        pos = self.cross_correlation()
-        # Get positions of final grid after cross correlation fitting
-        (cX, cY) = self.centers[pos]
-        x_start = int(cX-(self.grid_width_size//2 if self.grid_width%2 == 1 else (self.grid_width_size//2)-self.radius))
-        y_start = int(cY-(self.grid_len_size//2 if self.grid_len%2 == 1 else (self.grid_len_size//2)-self.radius))
-        x_end = int(cX+(self.grid_width_size//2 if self.grid_width%2 == 1 else (self.grid_width_size//2)+self.radius))
-        y_end = int(cY+(self.grid_len_size//2 if self.grid_len%2 == 1 else (self.grid_len_size//2)+self.radius))
-        grid = bw[y_start:y_end, x_start:x_end]
-        
-        # Just for showing the image
-        labeled_mask = self.image.copy()
-        (cX, cY) = self.centers[pos]
-        x_start = int(cX-(self.grid_width_size//2 if self.grid_width%2 == 1 else (self.grid_width_size//2)-self.radius))
-        y_start = int(cY-(self.grid_len_size//2 if self.grid_len%2 == 1 else (self.grid_len_size//2)-self.radius))
-        cv2.rectangle(labeled_mask, (x_start, y_start),
-            (x_start + self.grid_width_size, y_start + self.grid_len_size), (0, 255, 0), 3)
-        cv2.imshow('fit grid', labeled_mask)
-        cv2.waitKey()
-
-        self.get_aperture_size()
-
-        new_grid = self.get_grid_object(grid, y_start-cY, x_start-cX)
-        self.grid = new_grid
 
     # Sets the kernel for cross-correlation
     def set_kernel(self):
@@ -256,3 +216,56 @@ class ImageReader:
                 blob_mat = grid[start_y:end_y, start_x:end_x]
                 blob_array[i].append(Blob(blob_mat, center_x, center_y))
         return Grid(blob_array)
+
+    # Performs coarse grid automation -- finds possible blob locations
+    def centroid_coarse_grid(self):
+        # Threshold the image. This uses Otsu's thresholding method
+        bw = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        thresh = cv2.threshold(bw, 0, 255, cv2.THRESH_OTSU)[1]
+        cv2.imshow('threshold', thresh)
+        cv2.waitKey()
+
+        # Smooth the image
+        (labels, stats, centroids, num_labels) = self.smooth_image(thresh)
+        # Filter out small components
+        self.centers = self.filter_small_comps(bw, stats, centroids, labels, num_labels)
+
+    # Performs fine grid automation -- finds actual blob locations and sizes
+    def centroid_fine_grid(self):
+        # Get the radius of the blobs
+        self.get_radius_size()
+
+        self.display_component_image()
+
+    # Performs grid fitting via cross-correlation of an "ideal" grid
+    def fit_grid(self):
+        bw = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        self.get_grid_size()
+
+        # Create the kernel for cross-correlation. This is a perfect grid
+        self.set_kernel()
+
+        # Perform cross-correlation on all values and get the max's index
+        pos = self.cross_correlation()
+        # Get positions of final grid after cross correlation fitting
+        (cX, cY) = self.centers[pos]
+        x_start = int(cX-(self.grid_width_size//2 if self.grid_width%2 == 1 else (self.grid_width_size//2)-self.radius))
+        y_start = int(cY-(self.grid_len_size//2 if self.grid_len%2 == 1 else (self.grid_len_size//2)-self.radius))
+        x_end = int(cX+(self.grid_width_size//2 if self.grid_width%2 == 1 else (self.grid_width_size//2)+self.radius))
+        y_end = int(cY+(self.grid_len_size//2 if self.grid_len%2 == 1 else (self.grid_len_size//2)+self.radius))
+        grid = bw[y_start:y_end, x_start:x_end]
+        
+        # Just for showing the image
+        labeled_mask = self.image.copy()
+        (cX, cY) = self.centers[pos]
+        x_start = int(cX-(self.grid_width_size//2 if self.grid_width%2 == 1 else (self.grid_width_size//2)-self.radius))
+        y_start = int(cY-(self.grid_len_size//2 if self.grid_len%2 == 1 else (self.grid_len_size//2)-self.radius))
+        cv2.rectangle(labeled_mask, (x_start, y_start),
+            (x_start + self.grid_width_size, y_start + self.grid_len_size), (0, 255, 0), 3)
+        cv2.imshow('fit grid', labeled_mask)
+        cv2.waitKey()
+
+        self.get_aperture_size()
+
+        new_grid = self.get_grid_object(grid, y_start-cY, x_start-cX)
+        self.grid = new_grid
