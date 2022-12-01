@@ -11,7 +11,7 @@ class ZernikeSolver:
     vector_array =  []
     t_matrix = []
 
-    def __init__(self, grid: Grid, blob_size, ap_size):
+    def __init__(self, grid: Grid):
         self.grid = grid
         self.grid_coord_to_array()
         self.grid_vecs_to_array()
