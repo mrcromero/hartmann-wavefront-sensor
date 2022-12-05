@@ -63,7 +63,7 @@ class ImageReader:
         #             min_dist = dist
         #     norms.append(min_dist)
         # self.radius = np.average(norms)//2
-        self.radius = 172//2
+        self.radius = 172/2
 
     def smooth_image(self, thresh):
         # Automate smoothing so we get an apporpriate number of components
@@ -124,9 +124,10 @@ class ImageReader:
         cv2.waitKey()
         cv2.destroyAllWindows()
 
-        return mask, final_centroids
+        return final_centroids
 
     def display_component_image(self):
+        bw = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
         # Get the subimages for each blob
         labeled_mask = self.image.copy()
         new_centers = []
@@ -152,9 +153,16 @@ class ImageReader:
     # Sets the kernel for cross-correlation
     def set_kernel(self):
         # Create the kernel for cross-correlation. This is a perfect grid
-        stel_size = int(self.radius*2)
-        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,
+        # stel diameter size
+        stel_size = 98
+        # size of the kernel
+        kernel_size = int(self.radius*2)
+        kernel_circle = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,
             (stel_size,stel_size))
+        kernel = np.pad(kernel_circle,
+                        pad_width=(kernel_size-stel_size)//2,
+                        mode='constant',
+                        constant_values=0)
         row_kernel = []
         rows = [kernel]*self.grid_width
         row_kernel = np.hstack(tuple(rows))
@@ -229,6 +237,8 @@ class ImageReader:
         (labels, stats, centroids, num_labels) = self.smooth_image(thresh)
         # Filter out small components
         self.centers = self.filter_small_comps(bw, stats, centroids, labels, num_labels)
+
+
 
     # Performs fine grid automation -- finds actual blob locations and sizes
     def centroid_fine_grid(self):
