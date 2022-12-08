@@ -51,5 +51,5 @@ if __name__ == "__main__":
     print("### Running Image Tests ###")
     #test_init_image_reader()
     #grid_vector_image()
-    test_wavefront_recon()
+    #test_wavefront_recon()
     print("### All image tests passed! ###")

@@ -5,16 +5,23 @@ from .grid import Grid
 # Class for wavefront reconstruction via Modal Wave-Front Estimation from
 # Local Slopes
 class ZernikeSolver:
-    grid: Grid = None
+    grid = None
     coord_array_x = []
     coord_array_y = []
     vector_array =  []
     t_matrix = []
 
-    def __init__(self, grid: Grid):
-        self.grid = grid
-        self.grid_coord_to_array()
-        self.grid_vecs_to_array()
+    # array options are for testing
+    def __init__(self, grid=None, x_array=None, y_array=None, v_array=None):
+        # If grid is none, then set to testing mode
+        if (grid == None):
+            self.coord_array_x = x_array
+            self.coord_array_y = y_array
+            self.vector_array = v_array
+        else:
+            self.grid = grid
+            self.grid_coord_to_array()
+            self.grid_vecs_to_array()
         self.calc_t_matrix()
 
     # Converts the coordinates of the grid to an array for x and y
