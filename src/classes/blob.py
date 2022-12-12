@@ -15,9 +15,11 @@ class Blob:
     middle_coords = None
     centroid_coords = None
     max_intensity = 0
+    pixel_length = 0
 
     # pixel_mat is a NumPy array
-    def __init__(self, pixel_mat, i_x=0, i_y=0):
+    def __init__(self, pixel_mat, i_x=0, i_y=0, pixel_length=0):
+        self.pixel_length = pixel_length
         self.pixel_mat = pixel_mat
         middle_x = len(pixel_mat[0])//2
         middle_y = len(pixel_mat)//2
@@ -59,4 +61,4 @@ class Blob:
     def find_vector_to_centroid(self):
         if self.centroid_coords == None:
             self.find_centroid()
-        return PixelVector(self.middle_coords, self.centroid_coords)
+        return PixelVector(self.middle_coords, self.centroid_coords, self.pixel_length)

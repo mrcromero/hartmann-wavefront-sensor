@@ -1,9 +1,7 @@
 import sys
 import cv2
-import math
 import numpy as np
 import pandas as pd
-from collections import Counter
 
 # setting path
 sys.path.append('./')
@@ -20,7 +18,9 @@ class ImageReader:
     grid_width = 0
     grid_len_size = 0
     grid_width_size = 0
+    # Not sure if aperture_rad is still going to be used at all
     aperture_rad = 0
+    pixel_length = 0
     blob_size = 0
     radius = 0
     blobs = []
@@ -32,7 +32,8 @@ class ImageReader:
     # Regardless, would like to have an optional 'path' variable for testing
     # single images
     # Default values:
-    def __init__(self, path):
+    def __init__(self, path, pixel_length=1.55):
+        self.pixel_length = pixel_length
         self.image = cv2.imread(path)
         self.center_x = len(self.image[0])//2
         self.center_y = len(self.image)//2
@@ -145,7 +146,7 @@ class ImageReader:
                     (x_start, y_start), (x_end, y_end), (0, 255, 0), 3)
                 # Convert the subimages to blobs to calculate centroids
                 new_centers.append(self.centers[i])
-                self.blobs.append(Blob(blob_mat, cX, cY))
+                self.blobs.append(Blob(blob_mat, cX, cY, self.pixel_length))
         self.centers = new_centers
         cv2.imshow('fine labeled components', labeled_mask)
         cv2.waitKey()
@@ -219,10 +220,10 @@ class ImageReader:
                 end_y = y_edges[i+1]
                 # These values are used for normalizing the positions of the
                 # grid
-                center_x = (((start_x+end_x)//2) + y_shift)/self.aperture_rad
-                center_y = (((start_y+end_y)//2) + x_shift)/self.aperture_rad
+                center_x = (((start_x+end_x)//2) + y_shift)*self.pixel_length
+                center_y = (((start_y+end_y)//2) + x_shift)*self.pixel_length
                 blob_mat = grid[start_y:end_y, start_x:end_x]
-                blob_array[i].append(Blob(blob_mat, center_x, center_y))
+                blob_array[i].append(Blob(blob_mat, center_x, center_y, self.pixel_length))
         return Grid(blob_array)
 
     # Performs coarse grid automation -- finds possible blob locations

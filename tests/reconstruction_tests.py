@@ -45,6 +45,7 @@ def test_zernike_yshift():
 
 if __name__ == "__main__":
     print("### Running Reconstruction Tests ###")
-    test_zernike_solver()
-    test_zernike_xshift()
+    #test_zernike_solver()
+    #test_zernike_xshift()
+    #test_zernike_yshift()
     print("### All reconstruction tests passed! ###")
