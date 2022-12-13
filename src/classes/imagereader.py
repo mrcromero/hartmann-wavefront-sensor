@@ -31,8 +31,7 @@ class ImageReader:
     # streaming works
     # Regardless, would like to have an optional 'path' variable for testing
     # single images
-    # Default values:
-    def __init__(self, path, pixel_length=1.55):
+    def __init__(self, path, pixel_length=3.1):
         self.pixel_length = pixel_length
         self.image = cv2.imread(path)
         self.center_x = len(self.image[0])//2
