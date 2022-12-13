@@ -1,0 +1,97 @@
+class ZernikeDerivatives:
+    """
+    Cartesian representation of Zernike Polynomials and its first partial derivatives
+
+    Zernike Polynomials Z(x,y) to the 4th Degree:
+    Z0 = 1
+    Z1 = x
+    Z2 = y
+    Z3 = 2*x*y
+    Z4 = -1 + 2*y**2 + 2*x**2
+    Z5 = y**2 - x**2
+    Z6 = 3*x*y**2 - x**3
+    Z7 = -2*x + 3*x*y**2 + 3*x**3
+    Z8 = -2*y + 3*y**3 + 3*x**2*y
+    Z9 = y**3 - 3*x**2*y
+    Z10 = 4*y**3*x - 4*x**3*y
+    Z11 = -6*x*y + 8*y**3*x + 8*x**3*y
+    Z12 = 1 - 6*y**2 - 6*x**2 + 6*y**4 + 12*x**2*y**2 + 6*x**4
+    Z13 = -3*y**2 + 3*x**2 + 4*y**4 - 4*x**2*y**2 - 4*x**4
+    Z14 = y**4 - 6*x**2*y**2 + x**4
+    """
+
+    x = None
+    y = None
+
+    dZ0_dx = None    
+    dZ1_dx = None
+    dZ2_dx = None
+    dZ3_dx = None
+    dZ4_dx = None
+    dZ5_dx = None
+    dZ6_dx = None
+    dZ7_dx = None
+    dZ8_dx = None
+    dZ9_dx = None
+    dZ10_dx = None
+    dZ11_dx = None
+    dZ12_dx = None
+    dZ13_dx = None
+    dZ14_dx = None
+
+    dZ0_dy = None
+    dZ1_dy = None
+    dZ2_dy = None
+    dZ3_dy = None
+    dZ4_dy = None
+    dZ5_dy = None
+    dZ6_dy = None
+    dZ7_dy = None
+    dZ8_dy = None
+    dZ9_dy = None
+    dZ10_dy = None
+    dZ11_dy = None
+    dZ12_dy = None
+    dZ13_dy = None
+    dZ14_dy = None
+
+
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def partial_dx(self):
+        # First partial derivative: dZ/dx
+        dZ0_dx = 0
+        dZ1_dx = 1
+        dZ2_dx = 0
+        dZ3_dx = 2*y
+        dZ4_dx = 4*x
+        dZ5_dx = -2*x
+        dZ6_dx = 3*y**2 - 3*x**2
+        dZ7_dx = -2 + 3*y**2 + 9*x**2
+        dZ8_dx = 6*x*y
+        dZ9_dx = -6*x*y
+        dZ10_dx = 4*y**3 - 12*x**2*y
+        dZ11_dx = -6*y + 8*y**3 + 24*x**2*y
+        dZ12_dx = -12*x + 24*x*y**2 + 24*x**3
+        dZ13_dx = 6*x - 8*x*y**2 - 16*x**3
+        dZ14_dx = -12*x*y**2 + 4*x**3
+
+    def partial_dy(self):
+        # First partial derivative: dZ/dy
+        dZ0_dy = 0
+        dZ1_dy = 0
+        dZ2_dy = 1
+        dZ3_dy = 2*x
+        dZ4_dy = 4*y
+        dZ5_dy = 2*y
+        dZ6_dy = 6*x*y
+        dZ7_dy = 6*x*y
+        dZ8_dy = -2 + 9*y**2 + 3*x**2
+        dZ9_dy = 3*y**2 - 3*x**2
+        dZ10_dy = 12*y**2*x - 4*x**3
+        dZ11_dy = -6*x + 24*y**2*x + 8*x**3
+        dZ12_dy = -12*y + 24*y**3 + 12*x**2*y
+        dZ13_dy = -6*y + 16*y**3 - 8*x**2*y 
+        dZ14_dy = 4*y**3 - 12*x**2*y

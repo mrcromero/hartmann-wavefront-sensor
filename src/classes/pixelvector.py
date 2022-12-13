@@ -16,7 +16,7 @@ class PixelVector:
     x_length = None
     y_length = None
 
-    def __init__(self, from_coords, to_coords, pixel_length=1.55):
+    def __init__(self, from_coords, to_coords, pixel_length=0):
         self.x_vector = round(to_coords.x - from_coords.x, 3)
         self.y_vector = round(to_coords.y - from_coords.y, 3)
         self.x_length = round(self.x_vector*pixel_length, 3)
