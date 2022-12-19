@@ -63,7 +63,7 @@ class ImageReader:
         #             min_dist = dist
         #     norms.append(min_dist)
         # self.radius = np.average(norms)//2
-        self.radius = 172/2
+        self.radius = 140/2
 
     def smooth_image(self, thresh):
         # Automate smoothing so we get an apporpriate number of components
@@ -153,6 +153,9 @@ class ImageReader:
     # Sets the kernel for cross-correlation
     def set_kernel(self):
         # Create the kernel for cross-correlation. This is a perfect grid
+        # blob pad
+        blob_pad = 1
+        black_blob = np.zeros((int(self.radius)*2, int(self.radius)*2))
         # stel diameter size
         stel_size = 98
         # size of the kernel
@@ -166,8 +169,12 @@ class ImageReader:
         row_kernel = []
         rows = [kernel]*self.grid_width
         row_kernel = np.hstack(tuple(rows))
-        cols = [row_kernel]*self.grid_len
-        self.grid_kernel = np.vstack(tuple(cols))
+        # Create row padding
+        row_pad =  np.hstack(tuple([black_blob] + [kernel]*(self.grid_width-2*blob_pad) + [black_blob]))
+        cols = [row_pad] + [row_kernel]*self.grid_len + [row_pad]
+        # Create column padding
+        col_pad = np.vstack(tuple([black_blob]*2 + [kernel]*(self.grid_len-2*blob_pad) + [black_blob]*2))
+        self.grid_kernel = np.hstack(tuple([col_pad] + [np.vstack(tuple(cols))] + [col_pad]))
         (self.grid_len_size, self.grid_width_size) = np.shape(self.grid_kernel)
         cv2.imshow('kernel', self.grid_kernel*255)
         cv2.waitKey()
@@ -200,29 +207,40 @@ class ImageReader:
     # Gets the new Grid object based on the given grid
     #
     # args: grid -- the grid matrix
-    #       y_shift -- the shift in the y-axis to normalize blob positions
-    #       x_shift -- the shift in the x-axis to normalize blob positions
+    #       y_shift -- the shift in the y-axis to the start of the grid
+    #       x_shift -- the shift in the x-axis to the start of the grid
+    #       cx -- distance to center in the x-axis for normalization
+    #       cy -- distance to center in the y-axis for normalication
     #
     # returns: new Grid object
-    def get_grid_object(self, grid, y_shift, x_shift):
+    def get_grid_object(self, grid, y_shift, x_shift, cx, cy):
+        # Size of padding
+        blob_padding = 1
         # Get new blobs after fitting the grid
         blob_size = int(self.radius*2)
-        x_edges = [0 + (blob_size*i) for i in range(self.grid_width+1)]
-        y_edges = [0 + (blob_size*i) for i in range(self.grid_len+1)]
+        x_edges = [0 + (blob_size*i) for i in range(self.grid_width+1+(2*blob_padding))]
+        y_edges = [0 + (blob_size*i) for i in range(self.grid_len+1+(2*blob_padding))]
         blob_array = []
-        for i in range(self.grid_len):
-            blob_array.append([])
-            for j in range(self.grid_width):
+        for i in range(self.grid_len+(2*blob_padding)):
+            jstart = 0
+            jend = self.grid_width+(2*blob_padding)
+            if i == 0 or i == (self.grid_len+(2*blob_padding))-1:
+                jstart = 2
+                jend = self.grid_width+(2*blob_padding)-2
+            elif i == 1 or i == (self.grid_len+(2*blob_padding))-2:
+                jstart = 1
+                jend = self.grid_width+(2*blob_padding)-1
+            for j in range(jstart,jend):
                 start_x = x_edges[j]
                 start_y = y_edges[i]
                 end_x = x_edges[j+1]
                 end_y = y_edges[i+1]
                 # These values are used for normalizing the positions of the
                 # grid
-                center_x = (((start_x+end_x)//2) + y_shift)*self.pixel_length
-                center_y = (((start_y+end_y)//2) + x_shift)*self.pixel_length
+                center_x = (((start_x+end_x)//2) + y_shift)
+                center_y = (((start_y+end_y)//2) + x_shift)
                 blob_mat = grid[start_y:end_y, start_x:end_x]
-                blob_array[i].append(Blob(blob_mat, center_x, center_y, self.pixel_length))
+                blob_array.append(Blob(blob_mat, center_x, center_y, center_x-cx, center_y-cy, self.pixel_length))
         return Grid(blob_array)
 
     # Performs coarse grid automation -- finds possible blob locations
@@ -277,5 +295,5 @@ class ImageReader:
 
         self.get_aperture_size()
 
-        new_grid = self.get_grid_object(grid, y_start-cY, x_start-cX)
+        new_grid = self.get_grid_object(grid, y_start, x_start, cX, cY)
         self.grid = new_grid
