@@ -18,13 +18,14 @@ class Blob:
     pixel_length = 0
 
     # pixel_mat is a NumPy array
-    def __init__(self, pixel_mat, i_x=0, i_y=0, pixel_length=0):
+    def __init__(self, pixel_mat, cx=0, cy=0, ix=0, iy=0, pixel_length=0):
         self.pixel_length = pixel_length
         self.pixel_mat = pixel_mat
         middle_x = len(pixel_mat[0])//2
         middle_y = len(pixel_mat)//2
         self.max_intensity = (np.amax(self.pixel_mat))
-        self.i_center_coords = PixelCoords(i_x, i_y)
+        self.center_coords = PixelCoords(cx, cy)
+        self.i_center_coords = PixelCoords(ix, iy)
         self.middle_coords = PixelCoords(middle_x, middle_y)
 
     # Finds the centroid Blob's centroid if it isn't defined. Otherwise,
