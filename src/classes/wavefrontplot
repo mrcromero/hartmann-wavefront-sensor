@@ -1,0 +1,56 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+x = np.linspace(-1, 1, 1000)
+y = np.linspace(-1, 1, 1000)
+
+XX, YY = np.meshgrid(x, y)
+
+mask = (XX)**2 + (YY)**2 <= 1
+
+# Zernike 14 coefficients (Piston ignored)
+coef = [0, 0, -0.08049283391, 0.05568486319, 0.04566033321, 4.46e-05, 2.39e-05, -5.39e-05, 7.66e-08, -6.11e-09, -6.18e-09, 9.19e-09, 7.90e-09, -1.20e-08]
+
+PM = np.zeros((len(XX), len(XX), 14))
+PM[:, :, 0] = XX
+PM[:, :, 1] = YY
+PM[:, :, 2] = 2*XX*YY
+PM[:, :, 3] = -1 + 2*YY**2 + 2*XX**2
+PM[:, :, 4] = YY**2 - XX**2
+PM[:, :, 5] = 3*XX*YY**2 - XX**3
+PM[:, :, 6] = -2*XX + 3*XX*YY**2 + 3*XX**3
+PM[:, :, 7] = -2*YY + 3*YY**3 + 3*XX**2*YY
+PM[:, :, 8] = YY**3 - 3*XX**2*YY
+PM[:, :, 9] = 4*YY**3*XX - 4*XX**3*YY
+PM[:, :, 10] = -6*XX*YY + 8*YY**3*XX + 8*XX**3*YY
+PM[:, :, 11] = 1 - 6*YY**2 - 6*XX**2 + 6*YY**4 + 12*XX**2*YY**2 + 6*XX**4
+PM[:, :, 12] = -3*YY**2 + 3*XX**2 + 4*YY**4 - 4*XX**2*YY**2 - 4*XX**4
+PM[:, :, 13] = YY**4 - 6*XX**2*YY**2 + 4*XX**4
+
+for i in range(len(coef)):
+    PM[:, :, i] = PM[:, :, i]*coef[i]
+
+Wm = np.sum(PM, axis=2)  # Piston
+Piston = (np.max(Wm) + np.min(Wm)) / 2
+Wm = Wm - np.ones((len(XX)))*Piston
+masked_Wm = Wm*mask
+masked_Wm[mask == 0] = np.nan
+
+plt.figure(1)
+plt.imshow(masked_Wm, extent=[x.min(), x.max(), y.min(), y.max()], cmap='jet')
+plt.colorbar(label='µm')
+plt.xlabel('rho_x')
+plt.ylabel('rho_y')
+plt.title('Reconstructed Wavefront')
+plt.axis('square')
+
+fig = plt.figure(2)
+ax = fig.add_subplot(111, projection='3d')
+ax.plot_surface(XX, YY, masked_Wm, cmap='jet', edgecolor='none')
+plt.title('Reconstructed Wavefront')
+ax.set_xlabel('rho_x')
+ax.set_ylabel('rho_y')
+ax.set_zlabel('µm')
+
+plt.show()
