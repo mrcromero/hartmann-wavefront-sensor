@@ -50,24 +50,24 @@ Not much is needed for developing on the raspberry pi; with a keyboard, mouse, a
         <li>In the terminal, type <tt>sudo nano /etc/dhcpcd.conf</tt></li>
         <li>Add the following lines at the top of the file:<br>
 			<code>
-            interface eth0<br>
-            static ip_address=192.168.4.1  # can be any number of your choosing
+interface eth0<br>
+static ip_address=192.168.4.1  # can be any number of your choosing
             </code>
         </li>
     </ul>
 </ol>
-
+![image-20230131130639895](C:\Users\ericd\AppData\Roaming\Typora\typora-user-images\image-20230131130639895.png)
 
 
 <a id="Software"></a>
 
-<b>Software:</b>
+### <b>Software:</b>
 
 In order to use Python scripts that can run the new camera stack, we use the <a href="https://github.com/raspberrypi/picamera2">picamera2</a> library. General documentation for the library can be found <a href="https://datasheets.raspberrypi.com/camera/picamera2-manual.pdf">here</a>.
 
 \* Insert stuff about the stack setup here *
 
-<b>Calibration:</b>
+### <b>Calibration:</b>
 
 ``` 
 Note: currently going to explain how the script works, in the future we'll change it to explain that it runs on startup and how to re-run the script
