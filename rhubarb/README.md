@@ -49,15 +49,29 @@ Not much is needed for developing on the raspberry pi; with a keyboard, mouse, a
     <ul>
         <li>In the terminal, type <tt>sudo nano /etc/dhcpcd.conf</tt></li>
         <li>Add the following lines at the top of the file:<br>
-			<code>
-interface eth0<br>
-static ip_address=192.168.4.1  # can be any number of your choosing
-            </code>
+            <code>interface eth0<br>static ip_address=192.168.4.1</code> (can be any number of your choosing)
         </li>
+    </ul><br>
+    <li>Change your Ethernet adapter settings on your computer. The following should be the minimum required steps for a Windows computer.</li><br>
+    <ul>
+        <li>From the search bar, search "Network Connections" and click "View Network Connections" in the Control Panel. Right click on your Ethernet Adapter and click <b>Properties</b><br><img src="https://www.circuitbasics.com/wp-content/uploads/2015/12/How-to-Connect-your-Raspberry-Pi-Directly-to-your-Laptop-or-Desktop-with-an-Ethernet-Cable-Network-Connections.png"></li><br>
+        <li>Next, scroll until you see the IPv4 option, and double click it.<br><img src="https://www.circuitbasics.com/wp-content/uploads/2015/12/How-to-Connect-your-Raspberry-Pi-Directly-to-your-Laptop-or-Desktop-with-an-Ethernet-Cable-Internet-Protocol-Version-4-Properties.png"></li><br>
+        <li>That will bring up the following menu, where you should input the following selections: (<b>doesn't match the image!!!</b>)</li>
+        <ul>
+            <li>Use the following IP Address:</li>
+            <ul>
+                <li>IP Address: (enter an address of the style 192.168.4.X, where X is any number between 0 and 255)</li>
+                <li>Subnet mask: Should populate automatically, but for the IP we're using, it should be 255.255.255.0</li>
+            </ul>
+            <li>Use the following DNS server addresses:</li>
+            <ul>
+                <li>Preferred DNS server: Insert the same IP as used above</li>
+                <li>Alternate DNS server: leave blank</li>
+            </ul>
+        </ul><br>
+        Image for reference:<br><img src="https://www.circuitbasics.com/wp-content/uploads/2015/12/How-to-Connect-your-Raspberry-Pi-Directly-to-your-Laptop-or-Desktop-with-an-Ethernet-Cable-Internet-Protocol-Version-4-Properties-IP-ADDRESS-ASSIGNED.png">
     </ul>
 </ol>
-![image-20230131130639895](C:\Users\ericd\AppData\Roaming\Typora\typora-user-images\image-20230131130639895.png)
-
 
 <a id="Software"></a>
 
