@@ -165,7 +165,7 @@ In software requirements put opencv-python version 4.6.0.66 or before
 If opencv isn't installing correctly, here are some tips that should help (especially 1-5):
 
 1. `sudo apt install cmake`
-2. ``sudo apt install libatlas-base-dev` (can look for other dependencies <a href="https://stackoverflow.com/a/53402396">here</a>, make sure you have matplotlib and numpy installed)
+2. `sudo apt install libatlas-base-dev` (can look for other dependencies <a href="https://stackoverflow.com/a/53402396">here</a>, make sure you have matplotlib and numpy installed)
 3. `pip3 install --upgrade pip setuptools wheel` (and trying to install again)
 4. `pip3 install opencv-python==4.6.0.66 `(or earlier versions should work, but apparently 4.7.0.68 is the devil!)
 5. `pip install -U numpy` (if you get an error like "numpy.core.multiarray failed to import")
