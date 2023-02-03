@@ -148,7 +148,7 @@ The camera should be fairly plug and play, but for some reason the Pi can someti
     <li>Type CTRL + O, ENTER to save and CTRL + X to exit</li>
     <li>You will need to reboot for changes to take effect (<tt>sudo reboot</tt>)</li>
 </ol>
-To test it, try running `libcamera-hello` or `libcamera-still -t 0`, which will open an infinite preview window of the camera (you will need to close out with your mouse). Otherwise, search commands on Google to find attached cameras (such as `dmesg | grep imx477` or `v4l2-ctl --list-formats` or running python live and creating a picamera2 object (lists cameras upon creation, or print object.sensor_modes). test
+To test it, try running `libcamera-hello` or `libcamera-still -t 0`, which will open an infinite preview window of the camera (you will need to close out with your mouse). Otherwise, search commands on Google to find attached cameras (such as `dmesg | grep imx477` or `v4l2-ctl --list-formats` or running python live and creating a picamera2 object (lists cameras upon creation, or print object.sensor_modes).
 
 <a id="Software"></a>
 
