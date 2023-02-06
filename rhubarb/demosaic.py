@@ -33,7 +33,7 @@ def read_cam():
     picam2.start()
     time.sleep(2)
 
-
+    gray = None
     while True:
 
         if (counter > max_iter):
@@ -81,6 +81,7 @@ def read_cam():
         else:  # it is within range and can exit
             # exit = 1  # redundant
             break
+    return gray
 
 
 task = threading.Thread(target=read_cam, daemon=True)
