@@ -11,6 +11,13 @@ from tkinter import ttk
 from datetime import datetime
 import threading
 
+# Set path
+import pathlib
+sys.path.append('/'.join(str(pathlib.Path(__file__).parent.resolve()).split('/')[:-1]))
+
+from src.classes.imagereader import ImageReader
+from src.classes.zernikesolver import ZernikeSolver
+
 
 def read_cam():
     picam2 = Picamera2()
@@ -81,9 +88,13 @@ def read_cam():
         else:  # it is within range and can exit
             # exit = 1  # redundant
             break
-    return gray
+    reader = ImageReader(imm_arr=gray)
+    grid = reader.grid
+    c = ZernikeSolver(grid).sove()
+    return c
 
 def start_cam():
+    print("Hello!")
     task = threading.Thread(target=read_cam, daemon=True)
 
     root = tk.Tk()
