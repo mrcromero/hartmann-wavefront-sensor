@@ -31,9 +31,12 @@ class ImageReader:
     # streaming works
     # Regardless, would like to have an optional 'path' variable for testing
     # single images
-    def __init__(self, path, pixel_length=3.1):
+    def __init__(self, imm_arr=None, path=None, pixel_length=3.1):
         self.pixel_length = pixel_length
-        self.image = cv2.imread(path)
+        if (path == None):
+            self.image = imm_arr
+        else:
+            self.image = cv2.cvtColor(cv2.imread(path), cv2.COLOR_BGR2GRAY)
         self.center_x = len(self.image[0])//2
         self.center_y = len(self.image)//2
         self.centroid_coarse_grid()
@@ -127,7 +130,7 @@ class ImageReader:
         return final_centroids
 
     def display_component_image(self):
-        bw = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        bw = self.image
         # Get the subimages for each blob
         labeled_mask = self.image.copy()
         new_centers = []
@@ -184,7 +187,7 @@ class ImageReader:
     #
     # returns: the position in the centers array for the optimum grid position
     def cross_correlation(self):
-        bw = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        bw = self.image
         thresh = cv2.threshold(bw, 0, 255, cv2.THRESH_OTSU)[1]
         max_val = 0
         pos = 0
@@ -246,7 +249,7 @@ class ImageReader:
     # Performs coarse grid automation -- finds possible blob locations
     def centroid_coarse_grid(self):
         # Threshold the image. This uses Otsu's thresholding method
-        bw = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        bw = self.image
         thresh = cv2.threshold(bw, 0, 255, cv2.THRESH_OTSU)[1]
         cv2.imshow('threshold', thresh)
         cv2.waitKey()
@@ -267,7 +270,7 @@ class ImageReader:
 
     # Performs grid fitting via cross-correlation of an "ideal" grid
     def fit_grid(self):
-        bw = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        bw = self.image
         self.get_grid_size()
 
         # Create the kernel for cross-correlation. This is a perfect grid
