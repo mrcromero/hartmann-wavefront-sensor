@@ -19,7 +19,7 @@ from src.classes.imagereader import ImageReader
 from src.classes.zernikesolver import ZernikeSolver
 
 
-def read_cam():
+def read_cam(c):
     picam2 = Picamera2()
 
     max_val = 1 << 16
@@ -88,14 +88,19 @@ def read_cam():
         else:  # it is within range and can exit
             # exit = 1  # redundant
             break
+    # Perform wavefront reconstruction
     reader = ImageReader(imm_arr=gray)
     grid = reader.grid
-    c = ZernikeSolver(grid).sove()
+    coeffs = ZernikeSolver(grid).solve()
+    for i in range(len(c)):
+        c[i] = int(coeffs[i])
     return c
 
 def start_cam():
-    print("Hello!")
-    task = threading.Thread(target=read_cam, daemon=True)
+    # Hold the coefficients
+    c = [None] * 15
+    task = threading.Thread(target=read_cam, daemon=True, args=(c))
+    task.join()
 
     root = tk.Tk()
     root.rowconfigure(0, minsize=200, weight=1)
