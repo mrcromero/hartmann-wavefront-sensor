@@ -19,7 +19,7 @@ from src.classes.imagereader import ImageReader
 from src.classes.zernikesolver import ZernikeSolver
 
 
-def read_cam(c):
+def read_cam(txt, c):
     picam2 = Picamera2()
 
     max_val = 1 << 16
@@ -92,15 +92,14 @@ def read_cam(c):
     reader = ImageReader(imm_arr=gray)
     grid = reader.grid
     coeffs = ZernikeSolver(grid).solve()
+    # By assigning the values to the c array, we can acess it in the start_cam
+    # function. We would also be able to add it to the UI
     for i in range(len(c)):
         c[i] = int(coeffs[i])
-    return c
 
 def start_cam():
     # Hold the coefficients
     c = [None] * 15
-    task = threading.Thread(target=read_cam, daemon=True, args=(c))
-    task.join()
 
     root = tk.Tk()
     root.rowconfigure(0, minsize=200, weight=1)
@@ -108,7 +107,9 @@ def start_cam():
     txt = tk.StringVar()
     lbl = tk.Label(root, textvariable=txt).grid(row=0, column=0)
 
+    task = threading.Thread(target=read_cam, daemon=True, args=(txt, c))
     task.start()
+    task.join()
     root.mainloop()
 
 
