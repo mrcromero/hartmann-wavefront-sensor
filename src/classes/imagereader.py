@@ -31,7 +31,7 @@ class ImageReader:
     # streaming works
     # Regardless, would like to have an optional 'path' variable for testing
     # single images
-    def __init__(self, imm_arr=None, path=None, pixel_length=3.1):
+    def __init__(self, path=None, imm_arr=None, pixel_length=3.1):
         self.pixel_length = pixel_length
         if (path == None):
             self.image = imm_arr
@@ -97,7 +97,7 @@ class ImageReader:
         final_centroids = []
         mask = bw.copy()
         mask[::] = 0
-        labeled_mask = self.image.copy()
+        labeled_mask = cv2.cvtColor(self.image.copy(),cv2.COLOR_GRAY2RGB)
         coarse_num_labels = 0
         for i in range(1, num_labels):
             x = stats[i, cv2.CC_STAT_LEFT]
@@ -132,7 +132,7 @@ class ImageReader:
     def display_component_image(self):
         bw = self.image
         # Get the subimages for each blob
-        labeled_mask = self.image.copy()
+        labeled_mask = cv2.cvtColor(self.image.copy(),cv2.COLOR_GRAY2RGB)
         new_centers = []
         for i in range(len(self.centers)):
             (cX, cY) = self.centers[i]
@@ -287,7 +287,7 @@ class ImageReader:
         grid = bw[y_start:y_end, x_start:x_end]
         
         # Just for showing the image
-        labeled_mask = self.image.copy()
+        labeled_mask = cv2.cvtColor(self.image.copy(),cv2.COLOR_GRAY2RGB)
         (cX, cY) = self.centers[pos]
         x_start = int(cX-(self.grid_width_size//2 if self.grid_width%2 == 1 else (self.grid_width_size//2)-self.radius))
         y_start = int(cY-(self.grid_len_size//2 if self.grid_len%2 == 1 else (self.grid_len_size//2)-self.radius))

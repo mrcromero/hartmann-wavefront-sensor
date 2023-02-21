@@ -17,7 +17,7 @@ class ImageDisplayer:
 
     def __init__(self, imagereader):
         self.grid = imagereader.grid
-        self.image = imagereader.image
+        self.image =cv2.cvtColor(imagereader.image,cv2.COLOR_GRAY2RGB) 
 
     # Concatenates all the blobs in the grid into a single numpy array.
     # Also adds grid lines to show blob grids
