@@ -54,7 +54,9 @@ class CircularAperture:
 aperture = CircularAperture(152.4, 5) 
 pattern = aperture.diffraction_pattern(0.6, 3E3)
 aperture.plot_diffraction_pattern(pattern)
+image = aperture.create_diffraction_grid(pattern)
 # Create the diffraction pattern plot
 
 # Save the plot as a .png file
-plt.savefig('diffraction_pattern.png')
+im = Image.fromarray(image).convert('RGB')
+im.save("diffraction_grid.png")

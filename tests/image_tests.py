@@ -47,9 +47,23 @@ def test_wavefront_recon():
     for i in range(len(c)):
         print("C" + str(i) + ": " + str(c[i]))
 
+def test_diffraction_grid():
+    a = ImageReader('tests/images/diffraction_grid.png')
+    idisp = ImageDisplayer(a)
+    grid = a.grid
+
+    cv2.imshow('Grid Image', idisp.get_vector_image())
+    cv2.waitKey()
+    cv2.destroyAllWindows()
+
+    c = ZernikeSolver(grid).solve()
+    for i in range(len(c)):
+        print("C" + str(i) + ": " + str(c[i]))
+
 if __name__ == "__main__":
     print("### Running Image Tests ###")
     #test_init_image_reader()
     #grid_vector_image()
     test_wavefront_recon()
+    #test_diffraction_grid()
     print("### All image tests passed! ###")

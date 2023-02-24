@@ -66,6 +66,9 @@ class ImageReader:
         #             min_dist = dist
         #     norms.append(min_dist)
         # self.radius = np.average(norms)//2
+
+        # This is 140/2 for test images, 236/2 for generated diffraction
+        # blur images
         self.radius = 140/2
 
     def smooth_image(self, thresh):
