@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.special import j1
+from PIL import Image
 """
 The CircularAperture class represents a circular aperture and can be used to compute and plot 
 the diffraction pattern produced by the aperture.
@@ -18,8 +19,10 @@ class CircularAperture:
     def diffraction_pattern(self, wavelength, distance):
         k = 2 * np.pi / wavelength
         a = self.diameter / 2
-        x = np.arange(-int(0.5*1.55*a), int(0.5*1.55*a)+1, 1)
-        y = np.arange(-int(0.5*1.55*a), int(0.5*1.55*a)+1, 1)
+        x = np.arange(-int(0.5*1.55*self.diameter), int(0.5*1.55*self.diameter)+1, 1)
+        y = np.arange(-int(0.5*1.55*self.diameter), int(0.5*1.55*self.diameter)+1, 1)
+        x[x==0] = np.finfo(float).eps
+        y[y==0] = np.finfo(float).eps
         X, Y = np.meshgrid(x, y)
         R = np.sqrt(X**2 + Y**2)
         pattern = (j1(k*R*a/distance)/(k*R*a/distance))**2
@@ -51,4 +54,7 @@ class CircularAperture:
 aperture = CircularAperture(152.4, 5) 
 pattern = aperture.diffraction_pattern(0.6, 3E3)
 aperture.plot_diffraction_pattern(pattern)
-aperture.create_diffraction_grid(pattern)
+# Create the diffraction pattern plot
+
+# Save the plot as a .png file
+plt.savefig('diffraction_pattern.png')
