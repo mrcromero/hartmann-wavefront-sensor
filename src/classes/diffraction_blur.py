@@ -21,10 +21,9 @@ class CircularAperture:
         a = self.diameter / 2
         x = np.arange(-int(0.5*1.55*self.diameter), int(0.5*1.55*self.diameter)+1, 1)
         y = np.arange(-int(0.5*1.55*self.diameter), int(0.5*1.55*self.diameter)+1, 1)
-        x[x==0] = np.finfo(float).eps
-        y[y==0] = np.finfo(float).eps
         X, Y = np.meshgrid(x, y)
         R = np.sqrt(X**2 + Y**2)
+        R[R==0] = np.finfo(float).eps
         pattern = (j1(k*R*a/distance)/(k*R*a/distance))**2
         pattern = pattern * 1E3
         return pattern
@@ -54,9 +53,7 @@ class CircularAperture:
 aperture = CircularAperture(152.4, 5) 
 pattern = aperture.diffraction_pattern(0.6, 3E3)
 aperture.plot_diffraction_pattern(pattern)
-image = aperture.create_diffraction_grid(pattern)
 # Create the diffraction pattern plot
 
 # Save the plot as a .png file
-im = Image.fromarray(image).convert('RGB')
-im.save("diffraction_grid.png")
+plt.savefig('diffraction_pattern.png')
