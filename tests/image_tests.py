@@ -10,7 +10,7 @@ from src.classes.imagedisplayer import ImageDisplayer
 from src.classes.zernikesolver import ZernikeSolver
 
 def test_init_image_reader():
-    a = ImageReader('tests/images/Masked_100.bmp')
+    a = ImageReader('tests/images/diffraction_grid.png')
     assert a.grid is not None
 
     idisp = ImageDisplayer(a)
