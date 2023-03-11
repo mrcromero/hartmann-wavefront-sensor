@@ -69,7 +69,7 @@ class ImageReader:
 
         # This is 140/2 for test images, 236/2 for generated diffraction
         # blur images
-        self.radius = 140/2
+        self.radius = 236/2
 
     def smooth_image(self, thresh):
         # Automate smoothing so we get an apporpriate number of components
