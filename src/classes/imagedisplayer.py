@@ -61,8 +61,8 @@ class ImageDisplayer:
             masked_image[center_x-rad:center_x+rad,center_y+rad,0] = 255
             # Though centroid coordinates are sub-pixel values, they are
             # rounded here just for visualization
-            start_coord = (round(center_y), round(center_x))
-            end_coord = (round(init_y+centroid_y), round(init_x+centroid_x))
+            start_coord = (round(center_x), round(center_y))
+            end_coord = (round(init_x+centroid_x), round(init_y+centroid_y))
             # (y, x) indexing because numpy follows row, col indexing
             masked_image[round(start_coord[1]), round(start_coord[0]), 1] = 255
             # (x, y) is expected by cv2 for pixel coordinates

@@ -243,8 +243,8 @@ class ImageReader:
                 end_y = y_edges[i+1]
                 # These values are used for normalizing the positions of the
                 # grid
-                center_x = (((start_x+end_x)//2) + y_shift)
-                center_y = (((start_y+end_y)//2) + x_shift)
+                center_x = (((start_x+end_x)//2) + x_shift)
+                center_y = (((start_y+end_y)//2) + y_shift)
                 blob_mat = grid[start_y:end_y, start_x:end_x]
                 blob_array.append(Blob(blob_mat, center_x, center_y, center_x-cx, center_y-cy, self.pixel_length))
         return Grid(blob_array)
