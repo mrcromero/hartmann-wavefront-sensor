@@ -24,7 +24,7 @@ def zernike_displacement(coefficients):
     X, Y = X*R, Y*R
 
     # Normalize X, Y
-    X, Y = X/3.5, Y/3.5
+    X, Y = X*(236*3.5), Y*(236*3.5)
 
     # dZ/dx partial derivative of Zernike polynomials
     z_ders_x = [
@@ -91,7 +91,7 @@ if __name__ == "__main__":
         0,  # Z1
         0,  # Z2
         0,  # Z3
-        4,  # Z4
+        0.005,  # Z4
         0,  # Z5
         0,  # Z6
         0,  # Z7
@@ -104,3 +104,5 @@ if __name__ == "__main__":
         0,  # Z14
     ])
     shift_x, shift_y = zernike_displacement(coeff)
+    print(np.round(shift_x))
+    # print(shift_y)
