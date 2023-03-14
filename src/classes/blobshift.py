@@ -24,7 +24,7 @@ def zernike_displacement(coefficients):
     X, Y = X*R, Y*R
 
     # Normalize X, Y
-    X, Y = X*(236*3.5), Y*(236*3.5)
+    X, Y = X*(236*3.5) * 1.55E-3, Y*(236*3.5) * 1.55E-3
 
     # dZ/dx partial derivative of Zernike polynomials
     z_ders_x = [
@@ -67,31 +67,31 @@ def zernike_displacement(coefficients):
     # Calculate x displacement for given Zernike coefficients
     results_x = []
     for (c, func) in zip(coefficients, z_ders_x):
-        result_x = c * np.vectorize(func)(X,Y)
-        results_x.append(result_x)
+        result_x = c / 1000 * np.vectorize(func)(X,Y) # coefficient / 1000 to convert units µm -> mm 
+        results_x.append(result_x) 
 
-    x_displacement = np.sum(results_x, axis = 0)
+    x_displacement = np.sum(results_x, axis = 0) * 3000 # Multiplied by the mask - sensor distance
 
     # Calculate y displacement for given Zernike coefficients
     results_y = []
     for (c, func) in zip(coefficients, z_ders_y):
-        result_y = c * np.vectorize(func)(X, Y)
+        result_y = c / 1000 * np.vectorize(func)(X, Y) # coefficient / 1000 to convert units µm -> mm 
         results_y.append(result_y)
 
-    y_displacement = np.sum(results_y, axis = 0)
+    y_displacement = np.sum(results_y, axis = 0)  * 3000 # Multiplied by the mask - sensor distance
 
     # Return values
     return x_displacement, y_displacement
 
 
 if __name__ == "__main__":
-    # Test coefficient values
+    # Test coefficient values [µm]
     coeff = np.array([
         0,  # Z0
         0,  # Z1
         0,  # Z2
         0,  # Z3
-        0.005,  # Z4
+        5,  # Z4
         0,  # Z5
         0,  # Z6
         0,  # Z7
