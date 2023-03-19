@@ -65,24 +65,22 @@ class CircularAperture:
             new_pattern = pattern
 
         padding_rows = [0] * len(new_pattern[0])
-        padding_rows = [padding_rows] * abs(cur_shift_y) 
-
+        padding_rows = [padding_rows] * abs(cur_shift_y)
         if cur_shift_y < 0:
-            new_pattern = np.vstack(tuple([new_pattern] + [padding_rows])) 
+            new_pattern = np.vstack(tuple([padding_rows] + [new_pattern])) 
             y_start = 0
             y_end = len(pattern)
         elif cur_shift_y > 0:
-            new_pattern = np.vstack(tuple([padding_rows] + [new_pattern]))
+            new_pattern = np.vstack(tuple([new_pattern]+ [padding_rows]))
             y_start = abs(cur_shift_y)
             y_end = len(new_pattern)
-        else:
-            new_pattern = new_pattern
         new_pattern = np.asarray(new_pattern)[y_start:y_end, x_start:x_end]
+
         return new_pattern
     
     # Util function to add padding to the image in case of shifts to ensure
     # kernel does not go out of bounds during cross-correlation calculation
-    def addShiftPadding(self, image):
+    def add_shift_padding(self, image):
         max_x_shift = max(np.absolute(np.reshape(self.shift_x, self.shift_x.size)))
         max_y_shift = max(np.absolute(np.reshape(self.shift_y, self.shift_y.size)))
 
@@ -120,7 +118,7 @@ class CircularAperture:
             cur_row.append(self.apply_shift(col_pad[i], i, -1))
             image.append(np.hstack(tuple(cur_row)))
         image = np.vstack(tuple(image))
-        image = self.addShiftPadding(image)
+        image = self.add_shift_padding(image)
         return image
 
 
@@ -129,8 +127,8 @@ if __name__ == "__main__":
         0,  # Z0
         0,  # Z1
         0,  # Z2
-        0,  # Z3
-        0.005,  # Z4
+        5,  # Z3
+        0,  # Z4
         0,  # Z5
         0,  # Z6
         0,  # Z7
@@ -145,8 +143,8 @@ if __name__ == "__main__":
     shift_x, shift_y = zernike_displacement(coeff)
 
     ## Example for a 152.4µm diameter aperture, 3mm away, using 0.6µm wavelength light
-    # aperture = CircularAperture(152.4, 5, np.round(shift_x).astype(int), np.round(shift_y).astype(int))
-    aperture = CircularAperture(152.4, 5)
+    aperture = CircularAperture(152.4, 5, np.round(shift_x).astype(int), np.round(shift_y).astype(int))
+    #aperture = CircularAperture(152.4, 5)
     pattern = aperture.diffraction_pattern(0.6, 3E3)
     # aperture.plot_diffraction_pattern(pattern)
     image = aperture.create_diffraction_grid(pattern)
