@@ -31,10 +31,10 @@ class ImageDisplayer:
             cur_blob = cv2.cvtColor(gray_blob,cv2.COLOR_GRAY2RGB)
             rad = cur_blob.shape[0]//2
             # Add grid lines
-            masked_image[center_x-rad,center_y-rad:center_y+rad,0] = 255
-            masked_image[center_x+rad,center_y-rad:center_y+rad,0] = 255
-            masked_image[center_x-rad:center_x+rad,center_y-rad,0] = 255
-            masked_image[center_x-rad:center_x+rad,center_y+rad,0] = 255
+            masked_image[center_y-rad:center_y+rad,center_x-rad,0] = 255
+            masked_image[center_y-rad:center_y+rad,center_x+rad,0] = 255
+            masked_image[center_y-rad,center_x-rad:center_x+rad,0] = 255
+            masked_image[center_y+rad,center_x-rad:center_x+rad,0] = 255
         return masked_image
 
     # Gets the grid like get_grid_images, but also adds approximate centroid
@@ -55,10 +55,10 @@ class ImageDisplayer:
             init_x, init_y = center_x-rad, center_y-rad
 
             # Add grid lines
-            masked_image[center_x-rad,center_y-rad:center_y+rad,0] = 255
-            masked_image[center_x+rad,center_y-rad:center_y+rad,0] = 255
-            masked_image[center_x-rad:center_x+rad,center_y-rad,0] = 255
-            masked_image[center_x-rad:center_x+rad,center_y+rad,0] = 255
+            masked_image[center_y-rad:center_y+rad,center_x-rad,0] = 255
+            masked_image[center_y-rad:center_y+rad,center_x+rad,0] = 255
+            masked_image[center_y-rad,center_x-rad:center_x+rad,0] = 255
+            masked_image[center_y+rad,center_x-rad:center_x+rad,0] = 255
             # Though centroid coordinates are sub-pixel values, they are
             # rounded here just for visualization
             start_coord = (round(center_x), round(center_y))
