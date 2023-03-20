@@ -127,7 +127,7 @@ if __name__ == "__main__":
         0,  # Z0
         0,  # Z1
         0,  # Z2
-        5,  # Z3
+        4,  # Z3
         0,  # Z4
         0,  # Z5
         0,  # Z6
@@ -146,7 +146,7 @@ if __name__ == "__main__":
     aperture = CircularAperture(152.4, 5, np.round(shift_x).astype(int), np.round(shift_y).astype(int))
     #aperture = CircularAperture(152.4, 5)
     pattern = aperture.diffraction_pattern(0.6, 20E3)
-    # aperture.plot_diffraction_pattern(pattern)
+    #aperture.plot_diffraction_pattern(pattern)
     image = aperture.create_diffraction_grid(pattern)
     # Create the diffraction pattern plot
 
