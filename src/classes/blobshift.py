@@ -70,7 +70,7 @@ def zernike_displacement(coefficients):
         result_x = c / 1000 * np.vectorize(func)(X,Y) # coefficient / 1000 to convert units µm -> mm 
         results_x.append(result_x) 
 
-    x_displacement = np.sum(results_x, axis = 0) * 2000 # Multiplied by the mask - sensor distance
+    x_displacement = np.sum(results_x, axis = 0) * 20E3 # Multiplied by the mask - sensor distance
 
     # Calculate y displacement for given Zernike coefficients
     results_y = []
@@ -78,7 +78,7 @@ def zernike_displacement(coefficients):
         result_y = c / 1000 * np.vectorize(func)(X, Y) # coefficient / 1000 to convert units µm -> mm 
         results_y.append(result_y)
 
-    y_displacement = np.sum(results_y, axis = 0)  * 2000 # Multiplied by the mask - sensor distance
+    y_displacement = np.sum(results_y, axis = 0)  * 20E3 # Multiplied by the mask - sensor distance [µm]
 
     # Return values
     return x_displacement, y_displacement
@@ -91,7 +91,7 @@ if __name__ == "__main__":
         0,  # Z1
         0,  # Z2
         0,  # Z3
-        5,  # Z4
+        2,  # Z4
         0,  # Z5
         0,  # Z6
         0,  # Z7
@@ -103,6 +103,7 @@ if __name__ == "__main__":
         0,  # Z13
         0,  # Z14
     ])
+    
     shift_x, shift_y = zernike_displacement(coeff)
     print(np.round(shift_x))
-    # print(shift_y)
+    print(np.round(shift_y))
