@@ -146,8 +146,8 @@ if __name__ == "__main__":
     ## Example for a 152.4µm diameter aperture, 3mm away, using 0.6µm wavelength light
     aperture = CircularAperture(152.4, 5, np.round(shift_x).astype(int), np.round(shift_y).astype(int))
     #aperture = CircularAperture(152.4, 5)
-    pattern = aperture.diffraction_pattern(0.6, 3E3)
-    # aperture.plot_diffraction_pattern(pattern)
+    pattern = aperture.diffraction_pattern(0.6, 20E3)
+    #aperture.plot_diffraction_pattern(pattern)
     image = aperture.create_diffraction_grid(pattern)
     # Create the diffraction pattern plot
 
