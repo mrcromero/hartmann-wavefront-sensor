@@ -26,8 +26,8 @@ class CircularAperture:
     def diffraction_pattern(self, wavelength, distance):
         k = 2 * np.pi / wavelength
         a = self.diameter / 2
-        x = np.arange(-int(1*self.diameter/1.55), int(1*self.diameter/1.55)+1, 1) # Discretized to represent pixelated sensor measurements
-        y = np.arange(-int(1*self.diameter/1.55), int(1*self.diameter/1.55)+1, 1) # Discretized to represent pixelated sensor measurements
+        x = np.arange(-int(0.5*1.55*self.diameter), int(0.5*1.55*self.diameter)+1, 1)
+        y = np.arange(-int(0.5*1.55*self.diameter), int(0.5*1.55*self.diameter)+1, 1)
         X, Y = np.meshgrid(x, y)
         R = np.sqrt(X**2 + Y**2)
         R[R==0] = np.finfo(float).eps
@@ -113,8 +113,9 @@ class CircularAperture:
         for i in range(len(cols)):
             cur_row = []
             cur_row.append(self.apply_shift(col_pad[i], i, 0))
+            row_i = 1
             for j in range(len(cols[i])):
-                cur_row.append(self.apply_shift(cols[i][j], i, j))
+                cur_row.append(self.apply_shift(cols[i][j], i, row_i+j))
             cur_row.append(self.apply_shift(col_pad[i], i, -1))
             image.append(np.hstack(tuple(cur_row)))
         image = np.vstack(tuple(image))
@@ -127,8 +128,8 @@ if __name__ == "__main__":
         0,  # Z0
         0,  # Z1
         0,  # Z2
-        5,  # Z3
-        0,  # Z4
+        0,  # Z3
+        0.3,  # Z4
         0,  # Z5
         0,  # Z6
         0,  # Z7
@@ -145,7 +146,7 @@ if __name__ == "__main__":
     ## Example for a 152.4µm diameter aperture, 3mm away, using 0.6µm wavelength light
     aperture = CircularAperture(152.4, 5, np.round(shift_x).astype(int), np.round(shift_y).astype(int))
     #aperture = CircularAperture(152.4, 5)
-    pattern = aperture.diffraction_pattern(0.6, 20E3)
+    pattern = aperture.diffraction_pattern(0.6, 3E3)
     # aperture.plot_diffraction_pattern(pattern)
     image = aperture.create_diffraction_grid(pattern)
     # Create the diffraction pattern plot
