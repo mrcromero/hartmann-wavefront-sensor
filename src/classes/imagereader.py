@@ -26,12 +26,13 @@ class ImageReader:
     blobs = []
     centers = []
     grid = None
+    previews = True
 
     # The way the init works is subject to change depending on how image
     # streaming works
     # Regardless, would like to have an optional 'path' variable for testing
     # single images
-    def __init__(self, path=None, imm_arr=None, pixel_length=3.1):
+    def __init__(self, path=None, imm_arr=None, pixel_length=3.1, previews=True):
         self.pixel_length = pixel_length
         if (path == None):
             self.image = imm_arr
@@ -39,6 +40,7 @@ class ImageReader:
             self.image = cv2.cvtColor(cv2.imread(path), cv2.COLOR_BGR2GRAY)
         self.center_x = len(self.image[0])//2
         self.center_y = len(self.image)//2
+        self.previews = previews
         self.centroid_coarse_grid()
         self.centroid_fine_grid()
         self.fit_grid()
@@ -88,9 +90,9 @@ class ImageReader:
                 opened, 4, cv2.CV_32S)
             (num_labels, labels, stats, centroids) = output
             stel_size += num_labels//100
-        
-        cv2.imshow('smoothed', opened)
-        cv2.waitKey()
+        if (self.previews):
+            cv2.imshow('smoothed', opened)
+            cv2.waitKey()
         return (labels, stats, centroids, num_labels)
     
     def filter_small_comps(self, bw, stats, centroids, labels, num_labels):
@@ -123,12 +125,13 @@ class ImageReader:
                 final_centroids.append([cX, cY])
         area_factor+= 0.01
 
-        # Display found and labeled components
-        cv2.imshow('coarse components', mask)
-        cv2.waitKey()
-        cv2.imshow('coarse labeled components', labeled_mask)
-        cv2.waitKey()
-        cv2.destroyAllWindows()
+        if (self.previews):
+            # Display found and labeled components
+            cv2.imshow('coarse components', mask)
+            cv2.waitKey()
+            cv2.imshow('coarse labeled components', labeled_mask)
+            cv2.waitKey()
+            cv2.destroyAllWindows()
 
         return final_centroids
 
@@ -153,8 +156,10 @@ class ImageReader:
                 new_centers.append(self.centers[i])
                 self.blobs.append(Blob(blob_mat, cX, cY, self.pixel_length))
         self.centers = new_centers
-        cv2.imshow('fine labeled components', labeled_mask)
-        cv2.waitKey()
+        
+        if (self.previews):
+            cv2.imshow('fine labeled components', labeled_mask)
+            cv2.waitKey()
 
     # Sets the kernel for cross-correlation
     def set_kernel(self):
@@ -182,8 +187,9 @@ class ImageReader:
         col_pad = np.vstack(tuple([black_blob]*2 + [kernel]*(self.grid_len-2*blob_pad) + [black_blob]*2))
         self.grid_kernel = np.hstack(tuple([col_pad] + [np.vstack(tuple(cols))] + [col_pad]))
         (self.grid_len_size, self.grid_width_size) = np.shape(self.grid_kernel)
-        cv2.imshow('kernel', self.grid_kernel*255)
-        cv2.waitKey()
+        if (self.previews):
+            cv2.imshow('kernel', self.grid_kernel*255)
+            cv2.waitKey()
     
     # Cycles through the found blobs and performs cross-correlation to find the
     # optimum spot for the grid
@@ -254,8 +260,9 @@ class ImageReader:
         # Threshold the image. This uses Otsu's thresholding method
         bw = self.image
         thresh = cv2.threshold(bw, 0, 255, cv2.THRESH_OTSU)[1]
-        cv2.imshow('threshold', thresh)
-        cv2.waitKey()
+        if (self.previews):
+            cv2.imshow('threshold', thresh)
+            cv2.waitKey()
 
         # Smooth the image
         (labels, stats, centroids, num_labels) = self.smooth_image(thresh)
@@ -289,15 +296,16 @@ class ImageReader:
         y_end = int(cY+(self.grid_len_size//2 if self.grid_len%2 == 1 else (self.grid_len_size//2)+self.radius))
         grid = bw[y_start:y_end, x_start:x_end]
         
-        # Just for showing the image
-        labeled_mask = cv2.cvtColor(self.image.copy(),cv2.COLOR_GRAY2RGB)
-        (cX, cY) = self.centers[pos]
-        x_start = int(cX-(self.grid_width_size//2 if self.grid_width%2 == 1 else (self.grid_width_size//2)-self.radius))
-        y_start = int(cY-(self.grid_len_size//2 if self.grid_len%2 == 1 else (self.grid_len_size//2)-self.radius))
-        cv2.rectangle(labeled_mask, (x_start, y_start),
-            (x_start + self.grid_width_size, y_start + self.grid_len_size), (0, 255, 0), 3)
-        cv2.imshow('fit grid', labeled_mask)
-        cv2.waitKey()
+        if (self.previews):
+            # Just for showing the image
+            labeled_mask = cv2.cvtColor(self.image.copy(),cv2.COLOR_GRAY2RGB)
+            (cX, cY) = self.centers[pos]
+            x_start = int(cX-(self.grid_width_size//2 if self.grid_width%2 == 1 else (self.grid_width_size//2)-self.radius))
+            y_start = int(cY-(self.grid_len_size//2 if self.grid_len%2 == 1 else (self.grid_len_size//2)-self.radius))
+            cv2.rectangle(labeled_mask, (x_start, y_start),
+                (x_start + self.grid_width_size, y_start + self.grid_len_size), (0, 255, 0), 3)
+            cv2.imshow('fit grid', labeled_mask)
+            cv2.waitKey()
 
         self.get_aperture_size()
 

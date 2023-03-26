@@ -89,7 +89,7 @@ def read_cam(txt, c):
             # exit = 1  # redundant
             break
     # Perform wavefront reconstruction
-    reader = ImageReader(imm_arr=gray)
+    reader = ImageReader(imm_arr=gray, previews=False)
     grid = reader.grid
     coeffs = ZernikeSolver(grid).solve()
     # By assigning the values to the c array, we can acess it in the start_cam
