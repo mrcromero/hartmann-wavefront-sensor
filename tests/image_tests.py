@@ -10,7 +10,8 @@ from src.classes.imagedisplayer import ImageDisplayer
 from src.classes.zernikesolver import ZernikeSolver
 
 def test_init_image_reader():
-    a = ImageReader('tests/images/diffraction_grid.png')
+    #a = ImageReader('tests/images/diffraction_grid.png')
+    a = ImageReader('diffraction_grid.png')
     assert a.grid is not None
 
     idisp = ImageDisplayer(a)
@@ -22,7 +23,8 @@ def test_init_image_reader():
     cv2.destroyAllWindows()
 
 def grid_vector_image():
-    a = ImageReader('tests/images/diffraction_grid.png')
+    #a = ImageReader('tests/images/diffraction_grid.png')
+    a = ImageReader('diffraction_grid.png')
 
     idisp = ImageDisplayer(a)
 
@@ -35,7 +37,8 @@ def grid_vector_image():
     cv2.destroyAllWindows()
 
 def test_wavefront_recon():
-    a = ImageReader('tests/images/diffraction_grid.png')
+    #a = ImageReader('tests/images/diffraction_grid.png')
+    a = ImageReader('diffraction_grid.png')
     idisp = ImageDisplayer(a)
     grid = a.grid
 
@@ -48,7 +51,8 @@ def test_wavefront_recon():
         print("C" + str(i) + ": " + str(c[i]))
 
 def test_diffraction_grid():
-    a = ImageReader('tests/images/diffraction_grid.png')
+    #a = ImageReader('tests/images/diffraction_grid.png')
+    a = ImageReader('diffraction_grid.png')
     idisp = ImageDisplayer(a)
     grid = a.grid
 

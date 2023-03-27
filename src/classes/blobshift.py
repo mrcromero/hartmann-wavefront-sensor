@@ -23,9 +23,9 @@ def zernike_displacement(coefficients):
     # Mask X, Y for a circular pupil <= R
     X, Y = X*R, Y*R
 
-    # Normalize X, Y
-    X, Y = X*(236*3.5) * 1.55E-3, Y*(236*3.5) * 1.55E-3
-
+    # Apply physical dimensions to X, Y
+    # X, Y = X*(236*3.5) * 1.55, Y*(236*3.5) * 1.55
+    X, Y = X / 3.5, Y / 3.5
     # dZ/dx partial derivative of Zernike polynomials
     z_ders_x = [
         lambda x,y: (0),
@@ -67,20 +67,20 @@ def zernike_displacement(coefficients):
     # Calculate x displacement for given Zernike coefficients
     results_x = []
     for (c, func) in zip(coefficients, z_ders_x):
-        result_x = c / 1000 * np.vectorize(func)(X,Y) # coefficient / 1000 to convert units µm -> mm 
+        result_x = c * np.vectorize(func)(X,Y) # coefficient in µm
         results_x.append(result_x) 
 
-    x_displacement = np.sum(results_x, axis = 0) * 20 / 1.55E-3 # Multiplied by the mask - sensor distance and divded by pixel length => pixel displacement
+    x_displacement = np.sum(results_x, axis = 0) * -20E3 / 1.55 # Multiplied by the mask - sensor distance and divded by pixel length => pixel displacement
 
     # Calculate y displacement for given Zernike coefficients
     results_y = []
     for (c, func) in zip(coefficients, z_ders_y):
-        result_y = c / 1000 * np.vectorize(func)(X, Y) # coefficient / 1000 to convert units µm -> mm 
+        result_y = c * np.vectorize(func)(X, Y) # coefficient in µm
         results_y.append(result_y)
 
-    y_displacement = np.sum(results_y, axis = 0) * 20 / 1.55E-3 # Multiplied by the mask - sensor distance and divded by pixel length => pixel displacement
+    y_displacement = np.sum(results_y, axis = 0) * -20E3 / 1.55 # Multiplied by the mask - sensor distance and divded by pixel length => pixel displacement
 
-    # Return values
+    # Return values 
     return x_displacement, y_displacement
 
 
@@ -91,8 +91,8 @@ if __name__ == "__main__":
         0,  # Z1
         0,  # Z2
         0,  # Z3
-        0.3,  # Z4
-        0,  # Z5
+        0.001,  # Z4
+        0.001,  # Z5
         0,  # Z6
         0,  # Z7
         0,  # Z8

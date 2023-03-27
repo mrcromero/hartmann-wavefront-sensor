@@ -33,8 +33,9 @@ class ZernikeSolver:
     # Gets the vectors of a grid and converts it to an array
     def grid_vecs_to_array(self):
         vecs = self.grid.find_vectors_to_centroids()
-        self.vector_array = ((np.array([v.x_length for v in vecs] + [v.y_length for v in vecs])) / 20E3) # divided by the mask-to-sensor distance
-
+        self.vector_array = ((np.array([v.x_length for v in vecs] + [v.y_length for v in vecs])))
+        #self.vector_array /= - 20E3# pixel length / mask-sensor distance -> slope factor
+        
     # Calculates the transformation matrix for wavefront reconstruction
     # Zernike Polynomials Z(x,y) to the 4th Degree:
     #   - Z0 = 1
