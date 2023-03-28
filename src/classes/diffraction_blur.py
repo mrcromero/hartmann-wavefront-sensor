@@ -129,12 +129,12 @@ if __name__ == "__main__":
         0,  # Z1
         0,  # Z2
         0,  # Z3
-        0.001,  # Z4
-        0.001,  # Z5
+        -0.0005,  # Z4
+        0.0005,  # Z5
         0,  # Z6
-        0,  # Z7
+        0.0005,  # Z7
         0,  # Z8
-        0,  # Z9
+        0.0005,  # Z9
         0,  # Z10
         0,  # Z11
         0,  # Z12
@@ -146,7 +146,7 @@ if __name__ == "__main__":
     ## Example for a 152.4µm diameter aperture, 20mm away, using 0.6µm wavelength light
     aperture = CircularAperture(152.4, 5, np.round(shift_x).astype(int), np.round(shift_y).astype(int))
     #aperture = CircularAperture(152.4, 5)
-    pattern = aperture.diffraction_pattern(0.6, 20E3)
+    pattern = aperture.diffraction_pattern(0.6, 2E3)
     #aperture.plot_diffraction_pattern(pattern)
     image = aperture.create_diffraction_grid(pattern)
     # Create the diffraction pattern plot
