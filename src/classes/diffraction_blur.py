@@ -32,7 +32,7 @@ class CircularAperture:
         R = np.sqrt(X**2 + Y**2)
         R[R==0] = np.finfo(float).eps
         pattern = (j1(k*R*a/distance)/(k*R*a/distance))**2
-        pattern = pattern * 1E3
+        pattern = pattern * 1E3 # Aribtrary factor to increase z-magnitude (signal)
         return pattern
     
     # @param pattern: the 2D diffraction pattern returned by the diffraction_pattern method
@@ -129,8 +129,8 @@ if __name__ == "__main__":
         0,  # Z1
         0,  # Z2
         0,  # Z3
-        0.3,  # Z4
-        0,  # Z5
+        0.001,  # Z4
+        0.001,  # Z5
         0,  # Z6
         0,  # Z7
         0,  # Z8
@@ -143,7 +143,7 @@ if __name__ == "__main__":
     ])
     shift_x, shift_y = zernike_displacement(coeff)
 
-    ## Example for a 152.4µm diameter aperture, 3mm away, using 0.6µm wavelength light
+    ## Example for a 152.4µm diameter aperture, 20mm away, using 0.6µm wavelength light
     aperture = CircularAperture(152.4, 5, np.round(shift_x).astype(int), np.round(shift_y).astype(int))
     #aperture = CircularAperture(152.4, 5)
     pattern = aperture.diffraction_pattern(0.6, 20E3)
