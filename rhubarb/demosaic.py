@@ -214,62 +214,7 @@ def create_cam():
     return picam2
 
 
-<<<<<<< HEAD
-        # all the camera commands + processing, need to time it
-        raw = picam2.capture_array("raw")  # i could get fancy and do multiple captures, doubt it's necessary
-        raw = raw[:3040, :6084]
-        raw16 = raw.astype(np.uint16)  # raw array is 8 bit, convert to 16 bit. don't know why it's necessary but it is!...
-
-        im = np.zeros((3040, 4056), dtype=np.uint16)  # this doesn't have to be in loop
-
-        for byte in range(2):
-            im[:, byte::2] = ( (raw16[:, byte::3] << 4) | ((raw16[:, 2::3] >> (byte * 4)) & 0b1111) )
-
-        im16 = im * 16
-        im = im16
-
-        # rgb = cv2.cvtColor(im, cv2.COLOR_BAYER_BG2RGB)
-        gray = cv2.cvtColor(im, cv2.COLOR_BAYER_BG2GRAY)
-
-        arrmax = np.amax(gray)
-        txt.set(f"Max Saturation: {arrmax/max_val*100:.2f}%\nIteration: {counter}")
-        # print(f'arrmax = {arrmax}')
-        # print(f"iter = {counter}")
-
-        if (arrmax > (0.8 * max_val)):  # scene is too BRIGHT
-            counter += 1
-            exposure = int(np.floor((1 - pct) * exposure))
-            gain = (1 - pct) * gain
-            picam2.set_controls({"ExposureTime": exposure, "AnalogueGain": gain})
-            metadata = picam2.capture_metadata()
-            controls = {c: metadata[c] for c in ct_list}
-            print(controls)
-
-        elif (arrmax < (0.4 * max_val)):  # scene is too DARK
-            counter += 1
-            exposure = int(np.floor((1 + pct) * exposure))
-            gain = (1 + pct) * gain
-            picam2.set_controls({"ExposureTime": exposure, "AnalogueGain": gain})
-            metadata = picam2.capture_metadata()
-            controls = {c: metadata[c] for c in ct_list}
-            print(controls)
-
-        else:  # it is within range and can exit
-            # exit = 1  # redundant
-            break
-    # Perform wavefront reconstruction
-    reader = ImageReader(imm_arr=gray, previews=False)
-    grid = reader.grid
-    coeffs = ZernikeSolver(grid).solve()
-    # By assigning the values to the c array, we can acess it in the start_cam
-    # function. We would also be able to add it to the UI
-    for i in range(len(c)):
-        c[i] = int(coeffs[i])
-
-def start_cam():
-=======
 def not_used():
->>>>>>> fc8c8b7 (modularized file)
     # Hold the coefficients
     c = [None] * 15
 
