@@ -32,7 +32,7 @@ class ImageReader:
     # streaming works
     # Regardless, would like to have an optional 'path' variable for testing
     # single images
-    def __init__(self, path=None, imm_arr=None, pixel_length=3.1, previews=True):
+    def __init__(self, path=None, imm_arr=None, pixel_length=1.55, previews=True):
         self.pixel_length = pixel_length
         if (path == None):
             self.image = imm_arr
