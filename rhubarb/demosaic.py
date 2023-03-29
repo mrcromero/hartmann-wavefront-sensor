@@ -85,7 +85,7 @@ Outputs: None
 """
 def other_stuff(img):
     c = [None] * 15
-    reader = ImageReader(imm_arr=img)   ### NOTE: img must be 8-bit grayscale image
+    reader = ImageReader(imm_arr=img, previews = False)   ### NOTE: img must be 8-bit grayscale image
     grid = reader.grid
     coeffs = ZernikeSolver(grid).solve()
     # By assigning the values to the c array, we can acess it in the start_cam
