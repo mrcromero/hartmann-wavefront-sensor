@@ -108,4 +108,4 @@ class ZernikeSolver:
     # returns: a vector of the coefficients of the Zernike functions which
     #          characterizes the light wave
     def solve(self):
-        return np.matmul(np.linalg.pinv(self.t_matrix), self.vector_array) 
+        return  (236 * 3.5 * 1.55) * np.matmul(np.linalg.pinv(self.t_matrix), self.vector_array) 
