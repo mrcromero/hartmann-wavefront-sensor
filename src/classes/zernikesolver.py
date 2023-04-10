@@ -28,12 +28,12 @@ class ZernikeSolver:
     def grid_coord_to_array(self):
         blob_vec = self.grid.blob_mat
         self.coord_array_x = [(b.i_center_coords.x)/(3.5*236) for b in blob_vec]
-        self.coord_array_y = [(b.i_center_coords.y)/(3.5*236)  for b in blob_vec]
+        self.coord_array_y = [(-1*b.i_center_coords.y)/(3.5*236)  for b in blob_vec]
 
     # Gets the vectors of a grid and converts it to an array
     def grid_vecs_to_array(self):
         vecs = self.grid.find_vectors_to_centroids()
-        self.vector_array = ((np.array([v.x_vector for v in vecs] + [v.y_vector for v in vecs])))
+        self.vector_array = ((np.array([v.x_vector for v in vecs] + [-1*v.y_vector for v in vecs])))
         # divided by mask-sensor distance and multiplied by pixel length 
         self.vector_array /= - 20E3
         self.vector_array *= 1.55
@@ -108,4 +108,4 @@ class ZernikeSolver:
     # returns: a vector of the coefficients of the Zernike functions which
     #          characterizes the light wave
     def solve(self):
-        return np.matmul(np.linalg.pinv(self.t_matrix), self.vector_array) 
+        return  (236 * 3.5 * 1.55) * np.matmul(np.linalg.pinv(self.t_matrix), self.vector_array) 
