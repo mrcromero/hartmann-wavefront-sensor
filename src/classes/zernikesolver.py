@@ -6,14 +6,16 @@ from .grid import Grid
 # Local Slopes
 class ZernikeSolver:
     grid = None
+    coeffs = 0
     coord_array_x = []
     coord_array_y = []
     vector_array =  []
     t_matrix = []
 
     # array options are for testing
-    def __init__(self, grid=None, x_array=None, y_array=None, v_array=None):
+    def __init__(self, grid=None, x_array=None, y_array=None, v_array=None, coeffs=15):
         # If grid is none, then set to testing mode
+        self.coeffs = coeffs
         if (grid == None):
             self.coord_array_x = x_array
             self.coord_array_y = y_array
@@ -57,6 +59,7 @@ class ZernikeSolver:
     #   - Z14 = y**4 - 6*x**2*y**2 + x**4
     def calc_t_matrix(self):
         t_matrix_t = []
+        num_c = 16 if self.coeffs >= 15 else self.coeffs
         # Partial derivatives of x of Zernike polynomials
         z_ders_x = [
             lambda x,y: (0),
@@ -94,7 +97,7 @@ class ZernikeSolver:
             lambda x,y: (-6*y + 16*y**3 - 8*x**2*y ),
             lambda x,y: (4*y**3 - 12*x**2*y)
         ]
-        for i in range(len(z_ders_x)):
+        for i in range(num_c):
             zx = z_ders_x[i]
             zy = z_ders_y[i]
             t_matrix_t.append(
